@@ -1,0 +1,96 @@
+@media only screen and (max-width: 1200px) {
+  .button-box {
+    margin-right: unset;
+  }
+}
+@media only screen and (max-width: 992px) {
+  .homeSahkarpage {
+    justify-content: center;
+  }
+  .main-menu.main-menu-one {
+    font-size: 20px !important;
+  }
+  .admin-loginbtn {
+    max-width: 115px;
+    width: 100%;
+  }
+  .button-box {
+    margin-top: 30px;
+  }
+  .footer-one__single-explore {
+    margin-left: 0px;
+  }
+  .footer-one {
+    padding: 0px;
+  }
+  .memberCoopPDF{
+    display: block !important;
+  }
+  .memberCoopPDFIMG{
+    text-align: center;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .main-menu.main-menu-one {
+    font-size: 16px !important;
+  }
+  .sahkar-left-img img {
+    max-width: 350px;
+  }
+  .admin-loginbtn {
+    margin-left: 15px !important;
+  }
+  .contact-two__inner {
+    padding: 50px;
+  }
+
+  .mamberForm_field .contact-two__from .input-box.trmNdcndField {
+    height: auto;
+  }
+
+  .contact-two__from .input-box {
+    margin-bottom: 10px;
+  }
+  .pdf-logo-main-head{
+    font-size: 25px !important;
+  }
+}
+
+@media only screen and (max-width: 576px) {
+  .contact-two__inner {
+    padding: 50px;
+  }
+
+  .mamberForm_field .contact-two__from .input-box.trmNdcndField {
+    height: auto;
+  }
+
+  .contact-two__from .input-box {
+    margin-bottom: 10px;
+  }
+
+  .member_page_head {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+
+  .goTohome {
+    font-size: 13px;
+    padding: 5px;
+  }
+
+  .contact-two__inner {
+    padding: 20px;
+  }
+
+  .contact-two {
+    padding-bottom: 30px;
+  }
+
+  .memberShipFee {
+    font-size: 16px;
+    margin-bottom: 0px;
+  }
+ 
+}
