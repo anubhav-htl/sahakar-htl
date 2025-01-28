@@ -20,21 +20,19 @@ export default function Header() {
 
         {/* <div class="main-header-one__bottom">
           <div class="main-header-one__bottom-inner "> */}
-        <nav class="main-menu main-menu-one  ">
-          <div className="container">
-            <div className="d-flex align-items-center justify-content-center">
-              <p className="mb-0">
-                {" "}
-                Cooperative Society / FPO / SHG Data Collection Portal
-              </p>
+            <nav class="main-menu main-menu-one  ">
+              <div className="container">
+                <div className="d-flex align-items-center justify-content-center">
+               <p className="mb-0"> Cooperative Society / FPO / SHG Data Collection Portal</p>
               <Link href="/login" className="admin-loginbtn ms-5">
                 Admin Login
               </Link>
-            </div>
-          </div>
-        </nav>
-
-        {/* </div>
+                </div>
+             
+              </div>
+            </nav>
+          
+          {/* </div>
         </div> */}
       </header>
     </>

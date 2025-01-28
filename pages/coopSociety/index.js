@@ -62,13 +62,14 @@ export default function Agency() {
 
   const filterData = agencyData?.filter((item) => {
     const searchWords = searchData.toLowerCase().split(" ");
+    console.log('search', searchWords)
     return searchWords.some((word) => 
-    item.name.toLowerCase().includes(word) ||
-    item.registration_number.includes(word) ||
-    item.email_address.includes(word) ||
-    item.state.includes(word) ||
-    item.mobile_no.includes(word)
-  );
+      item.name.toLowerCase().includes(word) ||
+      item.registration_number.includes(word) ||
+      item.email_address.includes(word) ||
+      item.state.toLowerCase().includes(word) ||
+      item.mobile_no.includes(word)
+    );
   });
 
   
@@ -78,9 +79,11 @@ export default function Agency() {
 
   const itemsPerPage = 10;
   const endOffset = itemOffset + itemsPerPage;
-
+  
   const currentItems = filterData?.slice(itemOffset, endOffset);
   const pageCount = Math.ceil(pageDataCount / itemsPerPage);
+  const startIndex = (pageChange - 1) * itemsPerPage;
+
 
   const handlePageClick = (event) => {
     setPageChange(event.selected + 1);
@@ -124,21 +127,21 @@ export default function Agency() {
           <div className="card">
             <div className="card-body">
               <div className="d-flex align-items-center justify-content-between row my-3">
-                <div className="col-md-4">
+                <div className="col-md-3">
                   <h4 className="card-title">Cooperative Society List</h4>
                 </div>
-                <div className="col-md-4">
+                <div className="col-md-6">
                   <div className="search-field">
                     <i className="bi bi-search"></i>
                     <input
                       type="search"
                       className="form-control"
-                      placeholder="Search By Name"
+                      placeholder="Search By Name / Mobile / Reg. Number / State"
                       onChange={handleSearch}
                     />
                   </div>
                 </div>
-                <div className="col-md-4 text-end">
+                <div className="col-md-3 text-end">
                   <Link
                     href="/coopSociety/add-coopSociety"
                     className="btn btn-gradient-primary"
@@ -160,6 +163,7 @@ export default function Agency() {
                       <Table striped bordered hover className="table m-0">
                         <thead>
                           <tr>
+                            <th>#</th>
                             <th>Type Society</th>
                             <th>Register Number</th>
                             <th>Organization Name</th>
@@ -177,7 +181,7 @@ export default function Agency() {
                         <tbody>
                           {isLoading === true ? (
                             <tr>
-                              <td colSpan="8" className="text-center p-0">
+                              <td colSpan="13" className="text-center p-0">
                                 <Dna
                                   visible={true}
                                   height="80"
@@ -192,6 +196,7 @@ export default function Agency() {
                             currentItems?.map((val, index) => {
                               return (
                                 <tr key={index}>
+                                  <td>{parseInt(startIndex+index+1)}</td>
                                   <td>{val.typeSociety}</td>
                                   <td>{val.registration_number ? val.registration_number : "_"}</td>
                                   <td>{val.name ? val.name : "_"}</td>
@@ -290,7 +295,7 @@ export default function Agency() {
                             })
                           ) : (
                             <tr>
-                              <td colSpan="8">No Data Found! </td>
+                              <td colSpan="13">No Data Found! </td>
                             </tr>
                           )}
                         </tbody>

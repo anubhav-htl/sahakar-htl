@@ -2,14 +2,15 @@ import React from "react";
 // import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
-export default function Navbar({ toggleSidebar }) {
+export default function Navbar() {
   const router = useRouter();
   const logoutAdmin = () => {
     setTimeout(() => router.push("/"), 300);
     localStorage.clear();
-  };
+  }
+
 
   const [item, setItem] = useState(null);
 
@@ -19,12 +20,10 @@ export default function Navbar({ toggleSidebar }) {
       // Check if localStorage is available
       if (typeof localStorage !== "undefined") {
         // Access localStorage
-        const volunteerLogin =
-          JSON.parse(localStorage.getItem("VolunteerLogin")) || {};
-        const coopSocietyLogin =
-          JSON.parse(localStorage.getItem("CoopSocietyLogin")) || {};
+        const volunteerLogin = JSON.parse(localStorage.getItem("VolunteerLogin")) || {};
+        const coopSocietyLogin = JSON.parse(localStorage.getItem("CoopSocietyLogin")) || {};
         const adminLogin = JSON.parse(localStorage.getItem("AdminLogin")) || {};
-
+        
         // Check if either volunteerLogin or coopSocietyLogin is valid and contains the 'token' property
         if (volunteerLogin.token) {
           setItem(volunteerLogin);
@@ -37,7 +36,11 @@ export default function Navbar({ toggleSidebar }) {
         console.error("localStorage is not available.");
       }
     }
-  }, []);
+  }, []); 
+
+
+
+
 
   return (
     <>
@@ -45,19 +48,13 @@ export default function Navbar({ toggleSidebar }) {
         id="header"
         className="header fixed-top d-flex align-items-center digital-header"
       >
-        <div
-          className="d-block d-sm-none mx-3"
-          onClick={toggleSidebar}
-        >
-          <i class="bi bi-list p-2"></i>
-        </div>
         <div className="d-flex align-items-center justify-content-between">
           <Link
             href="/admin/dashboard"
             className="logo d-flex align-items-center justify-content-center"
-            style={{ backgroundColor: "#fff !important" }}
+            style={{backgroundColor:"#fff !important"}}
           >
-            <span class="d-none d-lg-block">Sahkar</span>
+           <span class="d-none d-lg-block">Sahkar</span>
           </Link>
         </div>
         {/* <!-- End Logo --> */}
@@ -278,9 +275,7 @@ export default function Navbar({ toggleSidebar }) {
                   className="rounded-circle"
                 />
                 <span className="d-none d-md-block dropdown-toggle ps-2">
-                  {!item
-                    ? ""
-                    : item?.data?.first_name + " " + item?.data?.last_name}
+                {(!item) ? "" : item?.data?.first_name + " "+item?.data?.last_name}
                 </span>
                 {/* <!-- End Profile Iamge Icon --> */}
               </Link>
@@ -290,6 +285,7 @@ export default function Navbar({ toggleSidebar }) {
                   {/* <span>Volunteer</span> */}
                 </li>
                 <li>
+
                   <hr className="dropdown-divider" />
                 </li>
 

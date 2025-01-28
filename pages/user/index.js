@@ -105,6 +105,9 @@ export default function User() {
   );
   // const pageCountmember = Math.ceil(pageDataCount / itemsPerPagemember);
   const pageCountmember = Math.ceil(filterData.length / itemsPerPagemember);
+
+  const startIndex = (pageChange - 1) * itemsPerPagemember;
+
   const handlePageMemberClick = (event) => {
     // setPageChangeMember(event.selected + 1);
     const newOffset = (event.selected * itemsPerPagemember) % filterData.length;
@@ -217,7 +220,7 @@ export default function User() {
                         <Table striped bordered hover className="table m-0">
                           <thead>
                             <tr>
-                              {/* <th>#</th> */}
+                              <th>#</th>
                               <th>Name</th>
                               <th>Mobile No.</th>
                               <th>Aadhar No.</th>
@@ -237,7 +240,7 @@ export default function User() {
                           <tbody>
                             {isLoading === true ? (
                               <tr>
-                                <td colSpan="11" className="text-center p-0">
+                                <td colSpan="13" className="text-center p-0">
                                   <Dna
                                     visible={true}
                                     height="80"
@@ -252,8 +255,8 @@ export default function User() {
                               currentItems?.map((val, index) => {
                                 return (
                                   <tr key={index}>
+                                    <td>{startIndex+index+1}</td>
                                     <td>{val.member_name}</td>
-
                                     <td>{val?.member_mobile_nunber}</td>
                                     <td>
                                       {val.member_aadhar_number
@@ -388,7 +391,7 @@ export default function User() {
                               })
                             ) : (
                               <tr>
-                                <td colSpan="11">No Data Found! </td>
+                                <td colSpan="13">No Data Found! </td>
                               </tr>
                             )}
                           </tbody>
@@ -434,7 +437,7 @@ export default function User() {
                         <Table striped bordered hover className="table m-0">
                           <thead>
                             <tr>
-                              {/* <th>#</th> */}
+                              <th>#</th>
                               <th>Name</th>
                               <th>Mobile No.</th>
                               <th>Aadhar No.</th>
@@ -451,7 +454,7 @@ export default function User() {
                           <tbody>
                             {isLoading === true ? (
                               <tr>
-                                <td colSpan="10" className="text-center p-0">
+                                <td colSpan="11" className="text-center p-0">
                                   <Dna
                                     visible={true}
                                     height="80"
@@ -466,6 +469,7 @@ export default function User() {
                               currentItemsmember?.map((val, index) => {
                                 return (
                                   <tr key={index}>
+                                    <td>{startIndex+index+1}</td>
                                     <td>{val.member_name}</td>
                                     <td>{val?.member_mobile_nunber}</td>
                                     <td>
@@ -585,7 +589,7 @@ export default function User() {
                               })
                             ) : (
                               <tr>
-                                <td colSpan="10">No Data Found! </td>
+                                <td colSpan="11">No Data Found! </td>
                               </tr>
                             )}
                           </tbody>

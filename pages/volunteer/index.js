@@ -62,8 +62,10 @@ export default function Volunteer() {
   const filterData = agencyData?.filter((item) => {
     const searchWords = searchData.toLowerCase().split(" ");
     return searchWords.some((word) => 
-       item.first_name.toLowerCase().includes(word) ||
-        item.last_name.toLowerCase().includes(word)
+      item.first_name.toLowerCase().includes(word) ||
+      item.last_name.toLowerCase().includes(word) ||
+      item.email.toLowerCase().includes(word) ||
+      item.contact_number.includes(word)
   );
   });
 
@@ -77,6 +79,7 @@ export default function Volunteer() {
 
   const currentItems = filterData?.slice(itemOffset, endOffset);
   const pageCount = Math.ceil(pageDataCount / itemsPerPage);
+  const startIndex = (pageChange - 1) * itemsPerPage;
 
   const handlePageClick = (event) => {
     setPageChange(event.selected + 1);
@@ -121,21 +124,21 @@ export default function Volunteer() {
           <div className="card">
             <div className="card-body">
               <div className="d-flex align-items-center justify-content-between row my-3">
-                <div className="col-md-4">
+                <div className="col-md-3">
                   <h4 className="card-title">Volunteer List</h4>
                 </div>
-                <div className="col-md-4">
+                <div className="col-md-6">
                   <div className="search-field">
                     <i className="bi bi-search"></i>
                     <input
                       type="search"
                       className="form-control"
-                      placeholder="Search By Name"
+                      placeholder="Search By Name / Email / Contact Nomber"
                       onChange={handleSearch}
                     />
                   </div>
                 </div>
-                <div className="col-md-4 text-end">
+                <div className="col-md-3 text-end">
                   <Link
                     href="/volunteer/add-volunteer"
                     className="btn btn-gradient-primary"
@@ -157,7 +160,8 @@ export default function Volunteer() {
                       <Table striped bordered hover className="table m-0">
                         <thead>
                           <tr>
-                          <th>Name</th>
+                            <th>#</th>
+                            <th>Name</th>
                             <th>Email</th>
                             <th>Mobile No.</th>
                             <th> Address</th>
@@ -185,6 +189,7 @@ export default function Volunteer() {
                             currentItems?.map((val, index) => {
                               return (
                                 <tr key={index}>
+                                  <td>{startIndex+index+1}</td>
                                   <td>
                                     {val.first_name + " " + val.last_name}
                                   </td>
@@ -321,7 +326,7 @@ export default function Volunteer() {
                             })
                           ) : (
                             <tr>
-                              <td colSpan="6">No Data Found! </td>
+                              <td colSpan="8">No Data Found! </td>
                             </tr>
                           )}
                         </tbody>

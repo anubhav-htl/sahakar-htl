@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-export default function Sidebar({ isOpen }) {
+export default function Sidebar() {
   // const [sidebar,setSideBar] = useState("1")
   const handleSideMenu = (sideActive) => {
     localStorage.setItem("sidebarActive", sideActive);
@@ -45,7 +45,7 @@ console.log("sidebarActive",sidebarActive);
   return (
     <>
       {/* /<!-- ======= Sidebar ======= --> */}
-      <aside id="sidebar" className={`sidebar ${isOpen ? 'start-0' : 'start-minus-300'}`}>
+      <aside id="sidebar" className="sidebar">
         <ul className="sidebar-nav" id="sidebar-nav">
           {item && item?.data?.role_id == 2 ? (
             <>

@@ -79,15 +79,12 @@ export default function Payment() {
                   <div className="table-responsive">
                     <Table striped bordered hover className="table m-0">
                       <thead>
-                        <tr>
-                        
+                        <tr>                        
                           <th width="13%">Name</th>
                           <th width="10%">amount</th>
                           <th width="19%">
                            status
                           </th>
-                        
-                         
                         </tr>
                       </thead>
                       <tbody>
@@ -108,19 +105,16 @@ export default function Payment() {
                           currentItems?.map((val, index) => {
                          
                             return (
-                              <tr>
-                               
+                              <tr>                               
                                 <td><p className="mb-0 eventName" title={val.eventname}>{val.eventname}</p></td>
-                                <td>{val.sessionCount}</td>
-                              
-                                <td>Success</td>
-                               
+                                <td>{val.sessionCount}</td>                              
+                                <td>Success</td>                               
                               </tr>
                             );
                           })
                         ) : (
                           <tr>
-                            <td colSpan="8">No Data Found!</td>
+                            <td colSpan="3">No Data Found!</td>
                           </tr>
                         )}
                       </tbody>
