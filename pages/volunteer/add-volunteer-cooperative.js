@@ -523,6 +523,8 @@ export default function AddAgency() {
                 ? "Success"
                 : "Failed",
               payment_id: response.razorpay_payment_id,
+              amount:cooperativeMembershipSelectedPrice,
+              memberShipCategory:cooperativeMembershipSelectedName 
             };
             // allRecord.append("payment_id", response.razorpay_payment_id);
             // allRecord.append(
