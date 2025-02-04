@@ -16,6 +16,8 @@ import Button from "react-bootstrap/Button";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import html2canvas from "html2canvas";
+import { stateCity } from "@/public/statecityobject";
+import axios from "axios";
 
 export default function User() {
   const router = useRouter();
@@ -29,6 +31,7 @@ export default function User() {
   const [pageChange, setPageChange] = useState(1);
   const [pageChangeMember, setPageChangeMember] = useState(1);
   const [pageDataCount, setPageDataCount] = useState();
+  const [stateName, setStateName] = useState("");
 
   let adminToken = "";
   //   useEffect(() => {
@@ -44,31 +47,13 @@ export default function User() {
     adminToken = item?.token;
   }
 
-  const User = async (userTabActive) => {
-    setIsLoading(true);
-    const response = await fetch(API_URL + `all-membership/${userTabActive}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${adminToken}`,
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await response.json();
-    setUserData(data.data);
-    setPageDataCount(data.count);
-    setIsLoading(false);
-  };
-  const handletabs = (active) => {
-    setUserTabActive(active);
-  };
-  useEffect(() => {
-    User(userTabActive);
-  }, [userTabActive, pageChange, pageChangeMember]);
-
   // search fielter data
   const [searchData, setSearchData] = useState("");
   const handleSearch = (e) => {
     setSearchData(e.target.value);
+  };
+  const handleStateChange = (e) => {
+    setStateName(e.target.value.toLowerCase().split(" "));
   };
   const filterData = userData?.filter((item) => {
     const searchWords = searchData.toLowerCase().split(" ");
@@ -110,7 +95,8 @@ export default function User() {
 
   const handlePageMemberClick = (event) => {
     // setPageChangeMember(event.selected + 1);
-    const newOffset = (event.selected * itemsPerPagemember) % filterData?.length;
+    const newOffset =
+      (event.selected * itemsPerPagemember) % filterData?.length;
     setItemOffsetmember(newOffset);
   };
   // pagination handl member end Code
@@ -132,8 +118,9 @@ export default function User() {
       console.error("Error deleting user:", error);
     }
   };
+  // Start - Invoice downnload functionality
 
-  // States for hendle pdf view & download
+  // State for hendle pdf view & download
   const [modalOpen, setModalOpen] = useState(false);
   const [pdfContent, setpdfContent] = useState(null);
   const [pdfLoading, setPdfLoading] = useState(false);
@@ -219,7 +206,66 @@ export default function User() {
       setModalOpen(false);
     }
   };
+  // END - Invoice downnload functionality
 
+  // START - Toggle status functionality
+  const [toggleLoading, setToggleLoading] = useState(false);
+  const toggleStatus = async (id) => {
+    try {
+      setToggleLoading(true);
+      const response = await axios.put(
+        `${API_URL}toggle-membership-status/${id}`
+      );
+
+      if (response.data.status) {
+        console.log("Status toggled successfully:", response.data.data);
+      } else {
+        console.error("Error:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error toggling status:", error.message);
+    } finally {
+      setToggleLoading(false);
+    }
+  };
+  // END - Toggle status functionality
+
+  // START - Fetch the all Membership functionality
+  const User = async (userTabActive) => {
+    try {
+      setIsLoading(true);
+      const url = `${API_URL}all-membership/${userTabActive}/?state=${stateName}`;
+  
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} - ${response.statusText}`);
+      }
+  
+      const data = await response.json();
+      
+      setUserData(data?.data || []);
+      setPageDataCount(data?.count || 0);
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const handletabs = (active) => {
+    setUserTabActive(active);
+  };
+  useEffect(() => {
+    User(userTabActive);
+  }, [userTabActive, pageChange, pageChangeMember, stateName,toggleLoading]);
+  // END - Fetch the all Membership functionality
   return (
     <>
       <Layout>
@@ -227,6 +273,7 @@ export default function User() {
           <div className="col-md-12 grid-margin stretch-card">
             <div className="card">
               <div className="card-body">
+                {/* ---------- START header ----------  */}
                 <div className="d-flex align-items-center justify-content-between row my-3">
                   <div className="col-md-4">
                     <h4 className="card-title">Members List</h4>
@@ -250,6 +297,24 @@ export default function User() {
                     Add Member
                   </Link> */}
                   </div>
+                </div>
+                {/* ---------- START Filter Dropdown ----------  */}
+                <div className="col-md-3 my-3">
+                  <label className="form-label">Filter by State</label>
+                  <select
+                    className="form-select  "
+                    id="inputState"
+                    onChange={handleStateChange}
+                    name="state"
+                    // value={formData.state}
+                  >
+                    <option value="">Select State</option>
+                    {Object.keys(stateCity).map((state) => (
+                      <option key={state} value={state}>
+                        {state}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 {/* tabs start */}
@@ -318,8 +383,8 @@ export default function User() {
                                 {/* <th>QR</th> */}
                                 <th>District</th>
                                 <th>Payment Amount</th>
-
                                 <th>Payment Status</th>
+                                <th>Status</th>
                                 <th>Created Date</th>
                                 <th>Action</th>
                               </tr>
@@ -372,7 +437,14 @@ export default function User() {
                                           ? val.member_district
                                           : "_"}
                                       </td>
-                                      <td>-</td>
+                                      <td>
+                                        {" "}
+                                        <div className="d-flex justify-content-center">
+                                          {val.member_amount
+                                            ? `Rs.${val.member_amount}`
+                                            : "-"}
+                                        </div>
+                                      </td>
                                       <td>
                                         {val.payment_status == "Success" ? (
                                           <span className="text-success">
@@ -385,6 +457,12 @@ export default function User() {
                                         ) : (
                                           "_"
                                         )}
+                                      </td>
+                                      <td>
+                                        {" "}
+                                        {val.status === "1"
+                                          ? "active"
+                                          : "inactive"}
                                       </td>
                                       <td>
                                         {val.created_at
@@ -407,6 +485,20 @@ export default function User() {
                                 </button>
                                 &nbsp;&nbsp;&nbsp; */}
                                         <div className="d-flex gap-2">
+                                          <div class="form-check form-switch">
+                                            <input
+                                              class="form-check-input"
+                                              type="checkbox"
+                                              checked={
+                                                val.status === "1"
+                                                  ? true
+                                                  : false
+                                              }
+                                              onClick={() =>
+                                                toggleStatus(val.id)
+                                              }
+                                            />
+                                          </div>
                                           {val.payment_id && (
                                             <button
                                               type="button"
@@ -416,7 +508,7 @@ export default function User() {
                                               }}
                                             >
                                               <i
-                                                class="bi bi-filetype-pdf"
+                                                class="bi bi-download"
                                                 style={{ cursor: "pointer" }}
                                               ></i>
                                             </button>

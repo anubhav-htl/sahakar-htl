@@ -16,6 +16,8 @@ import Button from "react-bootstrap/Button";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import html2canvas from "html2canvas";
+import { stateCity } from "@/public/statecityobject";
+import axios from "axios";
 
 export default function Agency() {
   const router = useRouter();
@@ -23,6 +25,7 @@ export default function Agency() {
   const [pageDataCount, setPageDataCount] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [pageChange, setPageChange] = useState(1);
+  const [stateName, setStateName] = useState("");
 
   let adminToken = "";
 
@@ -32,31 +35,13 @@ export default function Agency() {
     const item = JSON.parse(localStorage.getItem("AdminLogin"));
     adminToken = item?.token;
   }
-  const GetAgency = async () => {
-    let limit = 10;
-    setIsLoading(true);
-    const response = await fetch(
-      API_URL + `coopSociety-list/?page=${pageChange}&limit=${limit}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${adminToken}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    const data = await response.json();
-    setAgencyData(data.data);
-    setPageDataCount(data.count);
-    setIsLoading(false);
-  };
-  useEffect(() => {
-    GetAgency();
-  }, [pageChange]);
 
   const [searchData, setSearchData] = useState("");
   const handleSearch = (e) => {
     setSearchData(e.target.value);
+  };
+  const handleStateChange = (e) => {
+    setStateName(e.target.value.toLowerCase().split(" "));
   };
   const filterData = agencyData?.filter((item) => {
     const searchWords = searchData.toLowerCase().split(" ");
@@ -112,8 +97,9 @@ export default function Agency() {
       console.error("Error deleting user:", error);
     }
   };
+  // START - Invoice downnload functionality
 
-  // States for hendle pdf view & download
+  // State for hendle pdf view & download
   const [modalOpen, setModalOpen] = useState(false);
   const [pdfContent, setpdfContent] = useState(null);
   const [pdfLoading, setPdfLoading] = useState(false);
@@ -189,7 +175,63 @@ export default function Agency() {
       setModalOpen(false);
     }
   };
+  // END - Invoice downnload functionality
 
+  // START - Toggle status functionality
+  const [toggleLoading, setToggleLoading] = useState(false);
+  const toggleStatus = async (id) => {
+    try {
+      setToggleLoading(true);
+      const response = await axios.put(
+        `${API_URL}toggle-coopSociety-status/${id}`
+      );
+
+      if (response.data.status) {
+        console.log("Status toggled successfully:", response.data.data);
+      } else {
+        console.error("Error:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error toggling status:", error.message);
+    }finally {
+      setToggleLoading(false);
+    }
+  };
+  // END - Toggle status functionality
+
+  // START - Fetch the all coopSociety functionality
+  const GetAgency = async () => {
+    try {
+      setIsLoading(true);
+      const limit = 10;
+      const url = `${API_URL}coopSociety-list/?page=${pageChange}&limit=${limit}&state=${stateName}`;
+  
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} - ${response.statusText}`);
+      }
+  
+      const data = await response.json();
+      
+      setAgencyData(data?.data || []);
+      setPageDataCount(data?.count || 0);
+    } catch (error) {
+      console.error("Failed to fetch agency data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
+    GetAgency();
+  }, [pageChange, stateName,toggleLoading]);
+  // END - Fetch the all coopSociety functionality
   return (
     <>
       <Layout>
@@ -222,6 +264,24 @@ export default function Agency() {
                     </Link>
                   </div>
                 </div>
+                {/* ---------- START Filter Dropdown ----------  */}
+                <div className="col-md-3 my-3">
+                  <label className="form-label">Filter by State</label>
+                  <select
+                    className="form-select  "
+                    id="inputState"
+                    onChange={handleStateChange}
+                    name="state"
+                    // value={formData.state}
+                  >
+                    <option value="">Select State</option>
+                    {Object.keys(stateCity).map((state) => (
+                      <option key={state} value={state}>
+                        {state}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 {/* ---------- END header ----------  */}
                 <div className="tab-content" id="myTabContent">
                   <div
@@ -247,6 +307,7 @@ export default function Agency() {
                               <th>Created By</th>
                               <th>Payment Amount</th>
                               <th>Payment Status</th>
+                              <th>Membership Status</th>
                               <th>Created Date</th>
                               <th>Action</th>
                             </tr>
@@ -284,7 +345,11 @@ export default function Agency() {
                                     <td>
                                       {val?.user ? val?.user?.added_by : "-"}
                                     </td>
-                                    <td>-</td>
+                                    <td>
+                                      <div className="d-flex justify-content-center">
+                                        {val.amount ? `Rs.${val.amount}` : "-"}
+                                      </div>
+                                    </td>
                                     <td>
                                       {val.payment_status == "Success" ? (
                                         <span className="text-success">
@@ -299,6 +364,9 @@ export default function Agency() {
                                       )}
                                     </td>
                                     <td>
+                                      {val.status ? "active" : "inactive"}
+                                    </td>
+                                    <td>
                                       {val.created_at
                                         ? moment(val.created_at).format(
                                             "DD/MM/YYYY"
@@ -307,6 +375,14 @@ export default function Agency() {
                                     </td>
                                     <td>
                                       <div className="d-flex gap-2">
+                                        <div class="form-check form-switch">
+                                          <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            checked={val.status}
+                                            onClick={() => toggleStatus(val.id)}
+                                          />
+                                        </div>
                                         {val.amount && (
                                           <button
                                             type="button"
@@ -316,7 +392,7 @@ export default function Agency() {
                                             }}
                                           >
                                             <i
-                                              className="bi bi-filetype-pdf"
+                                              className="bi bi-download"
                                               style={{ cursor: "pointer" }}
                                             ></i>
                                           </button>
