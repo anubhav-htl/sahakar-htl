@@ -106,7 +106,6 @@ export default function CreateSession() {
             } else {
               // Clear validation errors for this id
               setErrors((prevErrors) => {
-        
                 const updatedErrors = { ...prevErrors };
                 delete updatedErrors[id];
                 return updatedErrors;
@@ -148,105 +147,109 @@ export default function CreateSession() {
 
   const submitForm = async (e) => {
     e.preventDefault();
+    try {
+      setIsLoading(true);
 
-    setIsLoading(true);
+      const errors = {};
 
-    const errors = {};
+      counter?.forEach((value, index) => {
+        if ((index) => 0) {
+          const id = index;
 
-    counter?.forEach((value, index) => {
- 
-      if ((index) => 0) {
-        const id = index;
-      
-        if (!errors[id]) {
-          errors[id] = {}; // Create an object for the id if it doesn't exist
+          if (!errors[id]) {
+            errors[id] = {}; // Create an object for the id if it doesn't exist
+          }
+
+          if (!value.session_name || value.session_name == "") {
+            errors[id].session_name = "Session Name (required)";
+          } else if (value.session_name.trim().length < 3) {
+            errors[id].session_name = "Session Name is too short";
+          } else if (
+            /[`~,.<>;':"/[\]|{}()=_+-]/.test(value.session_name.trim())
+          ) {
+            errors[id].session_name = "Special characters are not allowed!";
+          }
+
+          if (!value.event_date || value.event_date === null) {
+            errors[id].event_date = "Event Date (required)";
+          }
+
+          if (!value.start_session || value.start_session === null) {
+            errors[id].start_session = `Start Session Field (required)`;
+          }
+
+          if (!value.end_session || value.end_session === null) {
+            errors[id].end_session = `End Session Field (required)`;
+          }
+
+          // if (!value.lunch || value.lunch === null || value.lunch === "0") {
+          //   errors[id].lunch = `Lunch Field (required)`;
+          // }
+
+          // if (!value.gift || value.gift === null || value.lunch === "0") {
+          //   errors[id].gift = `Gift Field (required)`;
+          // }
+
+          if (
+            !value.attendance ||
+            value.attendance === null ||
+            value.lunch === "0"
+          ) {
+            errors[id].attendance = `Attendance Field (required)`;
+          }
         }
 
-        if (!value.session_name || value.session_name == "") {
-          errors[id].session_name = "Session Name (required)";
-        } else if (value.session_name.trim().length < 3) {
-          errors[id].session_name = "Session Name is too short";
-        } else if (
-          /[`~,.<>;':"/[\]|{}()=_+-]/.test(value.session_name.trim())
-        ) {
-          errors[id].session_name = "Special characters are not allowed!";
-        }
+        setErrors(errors);
+        return errors;
+      });
 
-        if (!value.event_date || value.event_date === null) {
-          errors[id].event_date = "Event Date (required)";
-        }
+      const allEmpty = Object.values(errors).every(
+        (obj) => Object.keys(obj).length === 0
+      );
 
-        if (!value.start_session || value.start_session === null) {
-          errors[id].start_session = `Start Session Field (required)`;
-        }
-
-        if (!value.end_session || value.end_session === null) {
-          errors[id].end_session = `End Session Field (required)`;
-        }
-
-        // if (!value.lunch || value.lunch === null || value.lunch === "0") {
-        //   errors[id].lunch = `Lunch Field (required)`;
-        // }
-
-        // if (!value.gift || value.gift === null || value.lunch === "0") {
-        //   errors[id].gift = `Gift Field (required)`;
-        // }
-
-        if (
-          !value.attendance ||
-          value.attendance === null ||
-          value.lunch === "0"
-        ) {
-          errors[id].attendance = `Attendance Field (required)`;
-        }
+      if (allEmpty === true) {
+        // if (errors && Object.keys(errors).length === 0) {
+        // Form is valid, handle form submission here
+        console.log("Form submitted successfully!");
+      } else {
+        // Form is invalid, display validation errors
+        setErrors(errors);
+        return null;
       }
 
-      setErrors(errors);
-      return errors;
-    });
+      // let session_data = JSON.stringify({ data: sessionData });
+      let counter_data = JSON.stringify({ data: counter });
+      const response = await fetch(API_URL + `create-event-session`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: counter_data,
+      });
 
-    const allEmpty = Object.values(errors).every(
-      (obj) => Object.keys(obj).length === 0
-    );
+      const data = await response.json();
 
-    if (allEmpty === true) {
-      // if (errors && Object.keys(errors).length === 0) {
-      // Form is valid, handle form submission here
-      console.log("Form submitted successfully!");
-    } else {
-      // Form is invalid, display validation errors
-      setErrors(errors);
-      return null;
-    }
-
-    // let session_data = JSON.stringify({ data: sessionData });
-    let counter_data = JSON.stringify({ data: counter });
-    const response = await fetch(API_URL + `create-event-session`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: counter_data,
-    });
-
-    const data = await response.json();
-
-    if (data.status === true) {
-      toast.success("Session Created Successfully");
-      setTimeout(
-        () =>
-          router.push({
-            pathname: "/event/event-images",
-            query: {
-              event_id: event_id,
-              event_name: event_name,
-            },
-          }),
-        4000
-      );
-      setTimeout(() => setIsLoading(false), 5000);
-    } else {
-      toast.error(`Something went wrong!`);
+      if (data.status === true) {
+        toast.success("Session Created Successfully");
+        setTimeout(
+          () =>
+            router.push({
+              pathname: "/event/event-images",
+              query: {
+                event_id: event_id,
+                event_name: event_name,
+              },
+            }),
+          4000
+        );
+        setTimeout(() => setIsLoading(false), 5000);
+      } else {
+        toast.error(`Something went wrong!`);
+      }
+    } catch (error) {
+      console.log("Failed to submit form", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -297,8 +300,6 @@ export default function CreateSession() {
 
     setCounter([...counter, newFields]);
   };
-
-
 
   const removeInputFields = (index) => {
     const data = [...counter];

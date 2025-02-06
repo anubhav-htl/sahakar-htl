@@ -434,17 +434,30 @@ export default function membership() {
   //pdf generate end
   return (
     <homeLayout>
-      <Header />
+      {/* <Header /> */}
+      <div class="main-header-one__top">
+          <div class="container">
+            <div class="logo-box-one">
+              <a href="/">
+                <img
+                  src="/img/sahakar-bharati-logo.jpg"
+                  alt="Awesome Logo"
+                  title=""
+                />
+              </a>
+            </div>
+          </div>
+        </div>
       <div>
-        <section class="page-header">
+        {/* <section class="page-header">
           <div class="page-header__bg"></div>
 
           <div class="container">
             <div class="page-header__inner text-center">
-              {/* <h2>Membership Registration</h2> */}
+              <h2>Membership Registration</h2>
             </div>
           </div>
-        </section>
+        </section> */}
         <section class="contact-two pt-5 ">
           <div class="container">
             <div class="contact-two__inner">
@@ -1164,7 +1177,7 @@ export default function membership() {
           </div>
         </section>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </homeLayout>
   );
 }

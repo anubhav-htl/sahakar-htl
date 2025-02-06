@@ -523,8 +523,8 @@ export default function AddAgency() {
                 ? "Success"
                 : "Failed",
               payment_id: response.razorpay_payment_id,
-              amount:cooperativeMembershipSelectedPrice,
-              memberShipCategory:cooperativeMembershipSelectedName 
+              amount: cooperativeMembershipSelectedPrice,
+              memberShipCategory: cooperativeMembershipSelectedName,
             };
             // allRecord.append("payment_id", response.razorpay_payment_id);
             // allRecord.append(
@@ -670,6 +670,19 @@ export default function AddAgency() {
   //pdf generate end
   return (
     <section className="sahkar society-step-form">
+      <div class="main-header-one__top mb-4">
+        <div class="container">
+          <div class="logo-box-one">
+            <a href="/">
+              <img
+                src="/img/sahakar-bharati-logo.jpg"
+                alt="Awesome Logo"
+                title=""
+              />
+            </a>
+          </div>
+        </div>
+      </div>
       <div className="container sahkar_bharti">
         <div className="row d-flex align-items-center justify-content-between top-field">
           <div className="col-md-6">
@@ -1938,90 +1951,91 @@ export default function AddAgency() {
                     style={{ opacity: "0", height: "1px", overflow: "hidden" }}
                   >
                     <div className="sahkarbharti-pdf-field" id="my-table">
-                    <div
-                      style={{ display: "flex", alignItems: "center" }}
-                      className="memberCoopPDF"
-                    >
-                      <div className="memberCoopPDFIMG">
-                        <img
-                          src="/pdfImg/Sblogo.jpg"
-                          style={{ maxWidth: "200px" }}
-                        />
-                      </div>
-                      <div style={{ textAlign: "center" }}>
-                        <p style={{ margin: "0px", fontSize: "14px" }}>
-                          ॥ Bina Sanskar Nahi Sahakar ॥ ॥ Bina Sahakar Nahi
-                          Uddahar ॥
-                        </p>
-                        <h2
-                          style={{
-                            margin: "5px 0px",
-                            color: "red",
-                            backgroundColor: "yellow",
-                            fontSize: "25px",
-                            fontWeight: "600",
-                          }}
-                        >
-                          Sahakar Bharati
-                          {/* <span style={{  fontSize: "14px",}}>®</span> */}
-                        </h2>
-                        <p style={{ margin: "0px", fontSize: "14px" }}>
-                          Registration No. BOM - 32 / 1979 GBDD under Societies
-                          Registration Act, 1860 and
-                        </p>
-                        <p style={{ margin: "0px", fontSize: "14px" }}>
-                          Registration No F - 5299 / 1980 Mumbai under Mumbai
-                          Public Trust Act 1950
-                        </p>
-                        <p
-                          style={{
-                            margin: "5px 0px",
-                            color: "red",
-                            fontSize: "14px",
-                          }}
-                        >
-                          Office :{" "}
-                          <a
-                            href="mailto:sahakarbharati@gmail.com"
-                            style={{ color: "red" }}
+                      <div
+                        style={{ display: "flex", alignItems: "center" }}
+                        className="memberCoopPDF"
+                      >
+                        <div className="memberCoopPDFIMG">
+                          <img
+                            src="/pdfImg/Sblogo.jpg"
+                            style={{ maxWidth: "200px" }}
+                          />
+                        </div>
+                        <div style={{ textAlign: "center" }}>
+                          <p style={{ margin: "0px", fontSize: "14px" }}>
+                            ॥ Bina Sanskar Nahi Sahakar ॥ ॥ Bina Sahakar Nahi
+                            Uddahar ॥
+                          </p>
+                          <h2
+                            style={{
+                              margin: "5px 0px",
+                              color: "red",
+                              backgroundColor: "yellow",
+                              fontSize: "25px",
+                              fontWeight: "600",
+                            }}
                           >
-                            sahakarbharati@gmail.com
-                          </a>{" "}
-                          |{" "}
-                          <a
-                            href="https://www.sahakarbharati.org"
-                            target="_blank"
-                            style={{ color: "red" }}
+                            Sahakar Bharati
+                            {/* <span style={{  fontSize: "14px",}}>®</span> */}
+                          </h2>
+                          <p style={{ margin: "0px", fontSize: "14px" }}>
+                            Registration No. BOM - 32 / 1979 GBDD under
+                            Societies Registration Act, 1860 and
+                          </p>
+                          <p style={{ margin: "0px", fontSize: "14px" }}>
+                            Registration No F - 5299 / 1980 Mumbai under Mumbai
+                            Public Trust Act 1950
+                          </p>
+                          <p
+                            style={{
+                              margin: "5px 0px",
+                              color: "red",
+                              fontSize: "14px",
+                            }}
                           >
-                            www.sahakarbharati.org
-                          </a>
-                        </p>
-                        <p
-                          style={{
-                            margin: "5px 0px",
-                            backgroundColor: "yellow",
-                            fontSize: "13px",
-                          }}
-                        >
-                          Plot No 211, BEAS Building, Flat No 25 & 27, Satguru
-                          Sharan CHS. Ltd., <br /> Opp. Sion Hospital, Sion (E),
-                          Mumbai - 400 022 | Mob:- 8552851979 / 022 24010252
-                        </p>
+                            Office :{" "}
+                            <a
+                              href="mailto:sahakarbharati@gmail.com"
+                              style={{ color: "red" }}
+                            >
+                              sahakarbharati@gmail.com
+                            </a>{" "}
+                            |{" "}
+                            <a
+                              href="https://www.sahakarbharati.org"
+                              target="_blank"
+                              style={{ color: "red" }}
+                            >
+                              www.sahakarbharati.org
+                            </a>
+                          </p>
+                          <p
+                            style={{
+                              margin: "5px 0px",
+                              backgroundColor: "yellow",
+                              fontSize: "13px",
+                            }}
+                          >
+                            Plot No 211, BEAS Building, Flat No 25 & 27, Satguru
+                            Sharan CHS. Ltd., <br /> Opp. Sion Hospital, Sion
+                            (E), Mumbai - 400 022 | Mob:- 8552851979 / 022
+                            24010252
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <h2
-                      style={{
-                        margin: "5px 0px",
-                        color: "#000",
-                        textTransform: "capitalize",
-                        textAlign: "center",
-                        fontSize: "35px",
-                        fontWeight: "600",
-                      }}
-                      className="pdf-logo-main-head"
-                    >
-                      Cooperative Society Payment receipt{" "}
-                    </h2>
+                      <h2
+                        style={{
+                          margin: "5px 0px",
+                          color: "#000",
+                          textTransform: "capitalize",
+                          textAlign: "center",
+                          fontSize: "35px",
+                          fontWeight: "600",
+                        }}
+                        className="pdf-logo-main-head"
+                      >
+                        Cooperative Society Payment receipt{" "}
+                      </h2>
                       <p
                         style={{
                           borderBottom: "2px solid #fb7400",

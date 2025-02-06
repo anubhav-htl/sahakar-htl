@@ -71,6 +71,18 @@ export default function home() {
                       Life Membership
                     </Link>
                   </p>
+                  <p>
+                    <span>
+                      Click here to apply for Event
+                    </span>
+                    <Link
+                    style={{backgroundColor:"#AF3A8C"}}
+                      href="/user/add-user"
+                      class="newCoopBtn my-2 "
+                    >
+                     Join Event
+                    </Link>
+                  </p>
                   {/* <p>
                     <span>Click here for Registration Fee</span>
                   </p>

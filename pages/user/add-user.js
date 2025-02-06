@@ -68,19 +68,17 @@ export default function AddUser() {
       document.body.appendChild(script);
     });
   }
-
   const SubmitAddUser = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     const validationErrors = isValid();
     if (validationErrors && Object.keys(validationErrors).length === 0) {
-      console.log("Form submitted successfully!");
     } else {
-      console.log("Validation Errors:", errors);
       setErrors(validationErrors);
       setIsLoading(false);
       return false;
     }
+    const { id, price } = JSON.parse(inputValue.event_id);
     const dataValue = {
       gender: inputValue.gender,
       role_id: "1",
@@ -89,10 +87,10 @@ export default function AddUser() {
       email: inputValue.email,
       contact_number: inputValue.contact_number,
       state: inputValue.state,
-      event_id: inputValue.event_id,
+      event_id: id,
       city: inputValue.city,
       designation: inputValue.degination1 + "-" + inputValue.degination2,
-      payment_status: "Free",
+      payment_status: price != 0 ? "pending" : "Free",
     };
 
     const response = await fetch(API_URL + "no-login-insert-user-backend", {
@@ -106,7 +104,7 @@ export default function AddUser() {
     });
     const user_details = await response.json();
 
-    if (user_details.status === true) {
+    if (user_details.status === true && price != 0) {
       setIsLoading(false);
       setErrors([]);
       // razor payment start
@@ -122,7 +120,8 @@ export default function AddUser() {
       var options = {
         key: key_id,
         key_secret: secret_key_id,
-        amount: "30000",
+        amount: price * 100,
+        // amount: "30000",
         currency: "INR",
         name: inputValue.first_name,
         description: "Application For User",
@@ -150,6 +149,8 @@ export default function AddUser() {
       // razor payment end
     } else {
       setIsLoading(false);
+      setRegSuccessModalShow(true);
+
       toast.error(user_details.message);
       // toast.error("Email or Contact Number Already Exists");
     }
@@ -187,6 +188,9 @@ export default function AddUser() {
       errors.contact_number = "Contact Number Should be exact 10 digits.";
     }
 
+    if (!inputValue.event_id) {
+      errors.event_id = "Event is required";
+    }
     // if (!inputValue.role_id) {
     //   errors.role_id = "Role is required";
     // }
@@ -268,120 +272,136 @@ export default function AddUser() {
 
   //pdf generate end
   return (
-    <div className="container sahkar_bharti">
-      <div className="row">
-        <div className="col-md-12 grid-margin stretch-card">
-          <div className="card">
-            <div className="card-body">
-              <div className="d-flex align-items-center justify-content-between">
-                <div className="col-md-6">
-                  <h4 className="card-title">
-                    <Link href="/" style={{ cursor: "pointer" }}>
-                      <i className="bi bi-arrow-left pe-2"></i>
-                    </Link>
-                    Add Member
-                  </h4>
-                </div>
-              </div>
-              <form>
-                <div className="row form-group adduser_form">
-                  <div className="col-md-6 position-relative">
-                    <label htmlFor="first_name" className="form-label">
-                      First name <span style={{ color: "red" }}>*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="first_name"
-                      id="first_name"
-                      className="form-control"
-                      placeholder="First Name"
-                      onChange={handleInput}
-                    />
-                    {errors?.first_name && (
-                      <span className="validationErrors">
-                        {errors?.first_name}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-md-6 position-relative">
-                    <label htmlFor="last_name" className="form-label">
-                      Last name<span style={{ color: "red" }}>*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="last_name"
-                      id="last_name"
-                      className="form-control"
-                      placeholder="Last Name"
-                      onChange={handleInput}
-                    />
-                    {errors?.last_name && (
-                      <span className="validationErrors">
-                        {errors?.last_name}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-md-6 position-relative">
-                    <label htmlFor="email" className="form-label">
-                      Email
-                      <span style={{ color: "red", paddingLeft: "5px" }}>
-                        {" "}
-                        {inputValue?.role_id === "3"
-                          ? ` Password Will Send On This Email.`
-                          : "*"}
-                      </span>
-                    </label>
-                    <input
-                      type="text"
-                      name="email"
-                      id="email"
-                      className="form-control"
-                      placeholder="Email"
-                      onChange={handleInput}
-                    />
-                    {errors?.email && (
-                      <span className="validationErrors">{errors?.email}</span>
-                    )}
-                  </div>
-
-                  <div className="col-md-6 position-relative">
-                    <label htmlFor="contact_number" className="form-label">
-                      Contact Number<span style={{ color: "red" }}>*</span>
-                    </label>
-                    <input
-                      type="number"
-                      name="contact_number"
-                      id="contact_number"
-                      className="form-control"
-                      placeholder="Contact Number"
-                      onChange={handleInput}
-                    />
-                    {errors?.contact_number && (
-                      <span className="validationErrors">
-                        {errors?.contact_number}
-                      </span>
-                    )}
-                  </div>
-
+    <>
+      <div class="main-header-one__top">
+        <div class="container">
+          <div class="logo-box-one">
+            <a href="/">
+              <img
+                src="/img/sahakar-bharati-logo.jpg"
+                alt="Awesome Logo"
+                title=""
+              />
+            </a>
+          </div>
+        </div>
+      </div>
+      <div className="container sahkar_bharti mt-4">
+        <div className="row">
+          <div className="col-md-12 grid-margin stretch-card">
+            <div className="card">
+              <div className="card-body">
+                <div className="d-flex align-items-center justify-content-between">
                   <div className="col-md-6">
-                    <label className="form-label">Select State</label>
-                    <select
-                      className="form-control shahkar-input apperence-disable"
-                      id="inputState"
-                      onChange={handleInput}
-                      name="state"
-                    >
-                      <option value="">Select State</option>
-                      {Object.keys(stateCity).map((state) => (
-                        <option key={state} value={state}>
-                          {state}
-                        </option>
-                      ))}
-                    </select>
+                    <h4 className="card-title">
+                      <Link href="/" style={{ cursor: "pointer" }}>
+                        <i className="bi bi-arrow-left pe-2"></i>
+                      </Link>
+                      Add Member
+                    </h4>
                   </div>
-                  {/* <div className="col-md-6 position-relative">
+                </div>
+                <form>
+                  <div className="row form-group adduser_form">
+                    <div className="col-md-6 position-relative">
+                      <label htmlFor="first_name" className="form-label">
+                        First name <span style={{ color: "red" }}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="first_name"
+                        id="first_name"
+                        className="form-control"
+                        placeholder="First Name"
+                        onChange={handleInput}
+                      />
+                      {errors?.first_name && (
+                        <span className="validationErrors">
+                          {errors?.first_name}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="col-md-6 position-relative">
+                      <label htmlFor="last_name" className="form-label">
+                        Last name<span style={{ color: "red" }}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="last_name"
+                        id="last_name"
+                        className="form-control"
+                        placeholder="Last Name"
+                        onChange={handleInput}
+                      />
+                      {errors?.last_name && (
+                        <span className="validationErrors">
+                          {errors?.last_name}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="col-md-6 position-relative">
+                      <label htmlFor="email" className="form-label">
+                        Email
+                        <span style={{ color: "red", paddingLeft: "5px" }}>
+                          {" "}
+                          {inputValue?.role_id === "3"
+                            ? ` Password Will Send On This Email.`
+                            : "*"}
+                        </span>
+                      </label>
+                      <input
+                        type="text"
+                        name="email"
+                        id="email"
+                        className="form-control"
+                        placeholder="Email"
+                        onChange={handleInput}
+                      />
+                      {errors?.email && (
+                        <span className="validationErrors">
+                          {errors?.email}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="col-md-6 position-relative">
+                      <label htmlFor="contact_number" className="form-label">
+                        Contact Number<span style={{ color: "red" }}>*</span>
+                      </label>
+                      <input
+                        type="number"
+                        name="contact_number"
+                        id="contact_number"
+                        className="form-control"
+                        placeholder="Contact Number"
+                        onChange={handleInput}
+                      />
+                      {errors?.contact_number && (
+                        <span className="validationErrors">
+                          {errors?.contact_number}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="col-md-6">
+                      <label className="form-label">Select State</label>
+                      <select
+                        className="form-control shahkar-input apperence-disable"
+                        id="inputState"
+                        onChange={handleInput}
+                        name="state"
+                      >
+                        <option value="">Select State</option>
+                        {Object.keys(stateCity).map((state) => (
+                          <option key={state} value={state}>
+                            {state}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {/* <div className="col-md-6 position-relative">
                     <label htmlFor="role_id" className="form-label">
                       Role<span style={{ color: "red" }}>*</span>
                     </label>
@@ -421,7 +441,7 @@ export default function AddUser() {
                     )}
                   </div> */}
 
-                  {/* <div className="col-md-6 position-relative">
+                    {/* <div className="col-md-6 position-relative">
                     <label htmlFor="address" className="form-label">
                       Address
                     </label>
@@ -458,89 +478,96 @@ export default function AddUser() {
                       </span>
                     )}
                   </div> */}
-                  <div className="col-md-6 position-relative">
-                    <label className="form-label">Select Event</label>
-                    <select
-                      className="form-control shahkar-input apperence-disable"
-                      id="inputState"
-                      onChange={handleInput}
-                      name="event_id"
-                    >
-                      <option value="">Select Event</option>
-                      {eventList.map((item) => (
-                        <option key={item.id} value={item.id}>
-                          {item.event_name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div class="col-md-6 position-relative">
-                    <label className="me-3">City</label>
-                    <div class="input-box">
-                      <input
-                        name="city"
-                        type="text"
+                    <div className="col-md-6 position-relative">
+                      <label className="form-label">Select Event</label>
+                      <select
+                        className="form-control shahkar-input apperence-disable"
+                        id="inputState"
                         onChange={handleInput}
-                        class="form-control"
-                        Placeholder="City / Village"
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-6 position-relative">
-                    <label htmlFor="gender" className="form-label">
-                      Gender<span style={{ color: "red" }}>*</span>
-                    </label>
-                    <div className="gender_value">
-                      <div className="form-check form-check-inline checkgender">
-                        <input
-                          className="radio_input"
-                          type="radio"
-                          name="gender"
-                          id="male"
-                          value="male"
-                          onChange={handleInput}
-                          checked={inputValue.gender == "male"}
-                        />
-                        <label className="form-check-label" htmlFor="male">
-                          Male
-                        </label>
-                      </div>
-                      <div className="form-check form-check-inline checkgender">
-                        <input
-                          className="radio_input"
-                          type="radio"
-                          name="gender"
-                          id="female"
-                          value="female"
-                          onChange={handleInput}
-                          checked={inputValue.gender == "female"}
-                        />
-                        <label className="form-check-label" htmlFor="female">
-                          Female
-                        </label>
-                      </div>
-                      <div className="form-check form-check-inline checkgender">
-                        <input
-                          className="radio_input"
-                          type="radio"
-                          name="gender"
-                          id="other"
-                          value="other"
-                          onChange={handleInput}
-                          checked={inputValue.gender == "other"}
-                        />
-                        <label className="form-check-label" htmlFor="other">
-                          Other
-                        </label>
-                      </div>
-                      {errors?.gender && (
+                        name="event_id"
+                      >
+                        <option value="">Select Event</option>
+                        {eventList.map((item) => {
+                          return (
+                            <option key={item.id} value={JSON.stringify(item)}>
+                              {item.event_name}
+                            </option>
+                          );
+                        })}
+                      </select>
+                      {errors?.event_id && (
                         <span className="validationErrors">
-                          {errors?.gender}
+                          {errors?.event_id}
                         </span>
                       )}
                     </div>
-                  </div>
-                  {/* <div className="col-md-6 position-relative">
+                    <div class="col-md-6 position-relative">
+                      <label className="me-3">City</label>
+                      <div class="input-box">
+                        <input
+                          name="city"
+                          type="text"
+                          onChange={handleInput}
+                          class="form-control"
+                          Placeholder="City / Village"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 position-relative">
+                      <label htmlFor="gender" className="form-label">
+                        Gender<span style={{ color: "red" }}>*</span>
+                      </label>
+                      <div className="gender_value">
+                        <div className="form-check form-check-inline checkgender">
+                          <input
+                            className="radio_input"
+                            type="radio"
+                            name="gender"
+                            id="male"
+                            value="male"
+                            onChange={handleInput}
+                            checked={inputValue.gender == "male"}
+                          />
+                          <label className="form-check-label" htmlFor="male">
+                            Male
+                          </label>
+                        </div>
+                        <div className="form-check form-check-inline checkgender">
+                          <input
+                            className="radio_input"
+                            type="radio"
+                            name="gender"
+                            id="female"
+                            value="female"
+                            onChange={handleInput}
+                            checked={inputValue.gender == "female"}
+                          />
+                          <label className="form-check-label" htmlFor="female">
+                            Female
+                          </label>
+                        </div>
+                        <div className="form-check form-check-inline checkgender">
+                          <input
+                            className="radio_input"
+                            type="radio"
+                            name="gender"
+                            id="other"
+                            value="other"
+                            onChange={handleInput}
+                            checked={inputValue.gender == "other"}
+                          />
+                          <label className="form-check-label" htmlFor="other">
+                            Other
+                          </label>
+                        </div>
+                        {errors?.gender && (
+                          <span className="validationErrors">
+                            {errors?.gender}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    {/* <div className="col-md-6 position-relative">
             <label htmlFor="address" className="form-label">
               Registration For
             </label>
@@ -574,44 +601,44 @@ export default function AddUser() {
               </div>
             </div>
           </div> */}
-                  {/* {inputValue.regFor == "self" ? ( */}
+                    {/* {inputValue.regFor == "self" ? ( */}
 
-                  <div className="col-md-6 position-relative">
-                    <label className="form-label">
-                      Designation Area (दायित्व क्षेत्र)
-                    </label>
-                    <select
-                      className="form-control shahkar-input apperence-disable"
-                      onChange={handleInput}
-                      name="degination1"
-                    >
-                      <option value="">Select Degination Area</option>
-                      {designation1.map((state) => (
-                        <option key={state} value={state}>
-                          {state}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                    <div className="col-md-6 position-relative">
+                      <label className="form-label">
+                        Designation Area (दायित्व क्षेत्र)
+                      </label>
+                      <select
+                        className="form-control shahkar-input apperence-disable"
+                        onChange={handleInput}
+                        name="degination1"
+                      >
+                        <option value="">Select Degination Area</option>
+                        {designation1.map((state) => (
+                          <option key={state} value={state}>
+                            {state}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
-                  <div className="col-md-6 position-relative">
-                    <label className="form-label">
-                      Designation Type (दायित्व प्रकार)
-                    </label>
-                    <select
-                      className="form-control shahkar-input apperence-disable"
-                      onChange={handleInput}
-                      name="degination2"
-                    >
-                      <option value="">Select Degination Type</option>
-                      {designation2.map((state) => (
-                        <option key={state} value={state}>
-                          {state}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  {/* ) : (
+                    <div className="col-md-6 position-relative">
+                      <label className="form-label">
+                        Designation Type (दायित्व प्रकार)
+                      </label>
+                      <select
+                        className="form-control shahkar-input apperence-disable"
+                        onChange={handleInput}
+                        name="degination2"
+                      >
+                        <option value="">Select Degination Type</option>
+                        {designation2.map((state) => (
+                          <option key={state} value={state}>
+                            {state}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {/* ) : (
             <div className="col-md-6 position-relative">
               <label className="form-label">Other</label>
               <input
@@ -624,7 +651,7 @@ export default function AddUser() {
             </div>
           )} */}
 
-                  {/* {inputValue?.role_id === "3" ? (
+                    {/* {inputValue?.role_id === "3" ? (
                     <>
                       <div className="col-md-6 position-relative">
                         <label htmlFor="password" className="form-label">
@@ -667,138 +694,37 @@ export default function AddUser() {
                   ) : (
                     ""
                   )} */}
-                  <p className="memberShipFee my-3">
-                    Fee Rs <span>300 /-</span>
-                  </p>
-                  <div className="col-md-12 text-left mt-4">
-                    <button
-                      type="button"
-                      className="submit_user_details btn btn-success border-0"
-                      onClick={SubmitAddUser}
-                      disabled={isLoading}
-                    >
-                      Pay Now
-                    </button>
-                  </div>
-                  <Modal
-                    show={regSuccessModalshow}
-                    onHide={handleRegSuccessModalClose}
-                    backdrop="static"
-                    keyboard={false}
-                    size="lg"
-                    className="regSuccessField"
-                  >
-                    <Modal.Header closeButton>
-                      {/* <Modal.Title>Modal title</Modal.Title> */}
-                    </Modal.Header>
-                    <Modal.Body>
-                      <div className="sahkarbharti-pdf-field">
-                        <div
-                          style={{ display: "flex", alignItems: "center" }}
-                          className="memberCoopPDF"
-                        >
-                          <div className="memberCoopPDFIMG">
-                            <img
-                              src="/pdfImg/Sblogo.jpg"
-                              style={{ maxWidth: "200px" }}
-                            />
-                          </div>
-                          <div style={{ textAlign: "center" }}>
-                            <p style={{ margin: "0px", fontSize: "14px" }}>
-                              ॥ Bina Sanskar Nahi Sahakar ॥ ॥ Bina Sahakar Nahi
-                              Uddahar ॥
-                            </p>
-                            <h2
-                              style={{
-                                margin: "5px 0px",
-                                color: "red",
-                                backgroundColor: "yellow",
-                                fontSize: "25px",
-                                fontWeight: "600",
-                              }}
-                            >
-                              Sahakar Bharati
-                              {/* <span style={{  fontSize: "14px",}}>®</span> */}
-                            </h2>
-                            <p style={{ margin: "0px", fontSize: "14px" }}>
-                              Registration No. BOM - 32 / 1979 GBDD under
-                              Societies Registration Act, 1860 and
-                            </p>
-                            <p style={{ margin: "0px", fontSize: "14px" }}>
-                              Registration No F - 5299 / 1980 Mumbai under
-                              Mumbai Public Trust Act 1950
-                            </p>
-                            <p
-                              style={{
-                                margin: "5px 0px",
-                                color: "red",
-                                fontSize: "14px",
-                              }}
-                            >
-                              Office :{" "}
-                              <a
-                                href="mailto:sahakarbharati@gmail.com"
-                                style={{ color: "red" }}
-                              >
-                                sahakarbharati@gmail.com
-                              </a>{" "}
-                              |{" "}
-                              <a
-                                href="https://www.sahakarbharati.org"
-                                target="_blank"
-                                style={{ color: "red" }}
-                              >
-                                www.sahakarbharati.org
-                              </a>
-                            </p>
-                            <p
-                              style={{
-                                margin: "5px 0px",
-                                backgroundColor: "yellow",
-                                fontSize: "13px",
-                              }}
-                            >
-                              Plot No 211, BEAS Building, Flat No 25 & 27,
-                              Satguru Sharan CHS. Ltd., <br /> Opp. Sion
-                              Hospital, Sion (E), Mumbai - 400 022 | Mob:-
-                              8552851979 / 022 24010252
-                            </p>
-                          </div>
-                        </div>
-                        <h2
-                          style={{
-                            margin: "5px 0px",
-                            color: "#000",
-                            textTransform: "capitalize",
-                            textAlign: "center",
-                            fontSize: "35px",
-                            fontWeight: "600",
-                          }}
-                          className="pdf-logo-main-head"
-                        >
-                          User Payment receipt{" "}
-                        </h2>
-                        <p
-                          style={{
-                            borderBottom: "2px solid #fb7400",
-                            margin: "20px 0px 30px",
-                          }}
-                        ></p>
-                        <UserSuccessPdf
-                          inputValue={inputValue}
-                          razorPayID={razorPayID}
-                        />
-                      </div>
-
-                      {/* pdf generate data start*/}
-                      <div
-                        style={{
-                          opacity: "0",
-                          height: "1px",
-                          overflow: "hidden",
-                        }}
+                    <p className="memberShipFee my-3">
+                      Fee Rs{" "}
+                      <span>
+                        {inputValue.event_id
+                          ? `${JSON.parse(inputValue.event_id).price} /-`
+                          : "No event selected"}
+                      </span>
+                    </p>
+                    <div className="col-md-12 text-left mt-4">
+                      <button
+                        type="button"
+                        className="submit_user_details btn btn-success border-0"
+                        onClick={SubmitAddUser}
+                        // disabled={isLoading}
                       >
-                        <div className="sahkarbharti-pdf-field" id="my-table">
+                        Pay Now
+                      </button>
+                    </div>
+                    <Modal
+                      show={regSuccessModalshow}
+                      onHide={handleRegSuccessModalClose}
+                      backdrop="static"
+                      keyboard={false}
+                      size="lg"
+                      className="regSuccessField"
+                    >
+                      <Modal.Header closeButton>
+                        {/* <Modal.Title>Modal title</Modal.Title> */}
+                      </Modal.Header>
+                      <Modal.Body>
+                        <div className="sahkarbharti-pdf-field">
                           <div
                             style={{ display: "flex", alignItems: "center" }}
                             className="memberCoopPDF"
@@ -895,27 +821,134 @@ export default function AddUser() {
                             razorPayID={razorPayID}
                           />
                         </div>
-                      </div>
-                      {/* pdf generate data end */}
-                    </Modal.Body>
-                    <Modal.Footer>
-                      <Button onClick={() => handleSinglePdfGenerate()}>
-                        Print
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        onClick={() => handleRegSuccessModalClose()}
-                      >
-                        Close
-                      </Button>
-                    </Modal.Footer>
-                  </Modal>
-                </div>
-              </form>
+
+                        {/* pdf generate data start*/}
+                        <div
+                          style={{
+                            opacity: "0",
+                            height: "1px",
+                            overflow: "hidden",
+                          }}
+                        >
+                          <div className="sahkarbharti-pdf-field" id="my-table">
+                            <div
+                              style={{ display: "flex", alignItems: "center" }}
+                              className="memberCoopPDF"
+                            >
+                              <div className="memberCoopPDFIMG">
+                                <img
+                                  src="/pdfImg/Sblogo.jpg"
+                                  style={{ maxWidth: "200px" }}
+                                />
+                              </div>
+                              <div style={{ textAlign: "center" }}>
+                                <p style={{ margin: "0px", fontSize: "14px" }}>
+                                  ॥ Bina Sanskar Nahi Sahakar ॥ ॥ Bina Sahakar
+                                  Nahi Uddahar ॥
+                                </p>
+                                <h2
+                                  style={{
+                                    margin: "5px 0px",
+                                    color: "red",
+                                    backgroundColor: "yellow",
+                                    fontSize: "25px",
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                  Sahakar Bharati
+                                  {/* <span style={{  fontSize: "14px",}}>®</span> */}
+                                </h2>
+                                <p style={{ margin: "0px", fontSize: "14px" }}>
+                                  Registration No. BOM - 32 / 1979 GBDD under
+                                  Societies Registration Act, 1860 and
+                                </p>
+                                <p style={{ margin: "0px", fontSize: "14px" }}>
+                                  Registration No F - 5299 / 1980 Mumbai under
+                                  Mumbai Public Trust Act 1950
+                                </p>
+                                <p
+                                  style={{
+                                    margin: "5px 0px",
+                                    color: "red",
+                                    fontSize: "14px",
+                                  }}
+                                >
+                                  Office :{" "}
+                                  <a
+                                    href="mailto:sahakarbharati@gmail.com"
+                                    style={{ color: "red" }}
+                                  >
+                                    sahakarbharati@gmail.com
+                                  </a>{" "}
+                                  |{" "}
+                                  <a
+                                    href="https://www.sahakarbharati.org"
+                                    target="_blank"
+                                    style={{ color: "red" }}
+                                  >
+                                    www.sahakarbharati.org
+                                  </a>
+                                </p>
+                                <p
+                                  style={{
+                                    margin: "5px 0px",
+                                    backgroundColor: "yellow",
+                                    fontSize: "13px",
+                                  }}
+                                >
+                                  Plot No 211, BEAS Building, Flat No 25 & 27,
+                                  Satguru Sharan CHS. Ltd., <br /> Opp. Sion
+                                  Hospital, Sion (E), Mumbai - 400 022 | Mob:-
+                                  8552851979 / 022 24010252
+                                </p>
+                              </div>
+                            </div>
+                            <h2
+                              style={{
+                                margin: "5px 0px",
+                                color: "#000",
+                                textTransform: "capitalize",
+                                textAlign: "center",
+                                fontSize: "35px",
+                                fontWeight: "600",
+                              }}
+                              className="pdf-logo-main-head"
+                            >
+                              User Payment receipt{" "}
+                            </h2>
+                            <p
+                              style={{
+                                borderBottom: "2px solid #fb7400",
+                                margin: "20px 0px 30px",
+                              }}
+                            ></p>
+                            <UserSuccessPdf
+                              inputValue={inputValue}
+                              razorPayID={razorPayID}
+                            />
+                          </div>
+                        </div>
+                        {/* pdf generate data end */}
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <Button onClick={() => handleSinglePdfGenerate()}>
+                          Print
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          onClick={() => handleRegSuccessModalClose()}
+                        >
+                          Close
+                        </Button>
+                      </Modal.Footer>
+                    </Modal>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -48,50 +48,53 @@ export default function EventImage() {
   //   setInputImage({ ...inputImage, [fieldName]: file });
   // };
 
-
-
   const submitImages = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
+    try {
+      e.preventDefault();
+      setIsLoading(true);
 
-    let errors = {};
-    if (inputImage.length <= 0) {
-      errors.images = "No images Selected, Please Select Images.";
-      setInputImage("");
-      setErrors(errors);
-      return;
-    }
+      let errors = {};
+      if (inputImage.length <= 0) {
+        errors.images = "No images Selected, Please Select Images.";
+        setInputImage("");
+        setErrors(errors);
+        return;
+      }
 
-    const formData = new FormData();
-    formData.append('event_id',event_id);
-    for(let i=0; i<selectedImages.length; i++){
-      formData.append('images', selectedImages[i]);
-    }
+      const formData = new FormData();
+      formData.append("event_id", event_id);
+      for (let i = 0; i < selectedImages.length; i++) {
+        formData.append("images", selectedImages[i]);
+      }
 
-    const response = await fetch(API_URL + "upload-event-images", {
-      method: "POST", // or 'PUT'
-      headers: {
-        Accept: `multipart/form-data`,
-        // "Content-Type": "application/json",
-      },
-      body: formData      
-    });
+      const response = await fetch(API_URL + "upload-event-images", {
+        method: "POST", // or 'PUT'
+        headers: {
+          Accept: `multipart/form-data`,
+          // "Content-Type": "application/json",
+        },
+        body: formData,
+      });
 
-    const data = await response.json();
-  
+      const data = await response.json();
 
-    if (data.status === true) {
-      toast.success("Image Uploaded Successfully");
-      setTimeout(
-        () =>
-          router.push({
-            pathname: "/event",
-          }),
-        4000
-      );
-      setTimeout(() => setIsLoading(false), 5000);
-    } else {
-      toast.error(`Something went wrong!`);
+      if (data.status === true) {
+        toast.success("Image Uploaded Successfully");
+        setTimeout(
+          () =>
+            router.push({
+              pathname: "/event",
+            }),
+          4000
+        );
+        setTimeout(() => setIsLoading(false), 5000);
+      } else {
+        toast.error(`Something went wrong!`);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -161,7 +164,7 @@ export default function EventImage() {
                               alt="images"
                               style={{
                                 width: "100px",
-                                height: "100px"
+                                height: "100px",
                               }}
                             />
                           </div>

@@ -1,6 +1,13 @@
 "use client";
 import moment from "moment";
 export default function MembershipPDF({ inputValue, razorPayID }) {
+  const { id, price } = (() => {
+    try {
+      return JSON.parse(inputValue?.event_id || "{}");
+    } catch {
+      return {};
+    }
+  })();
   const currentDate = new Date();
   return (
     <div className="pdf-table-data">
@@ -33,7 +40,7 @@ export default function MembershipPDF({ inputValue, razorPayID }) {
         </div>
         <div className="col-lg-3 col-6">
           <p className="pdf-table-text" style={{ padding: "5px" }}>
-            {razorPayID}
+            {price == 0 ? "Free" :razorPayID}
           </p>
         </div>
         <div className="col-lg-3 col-6">
@@ -64,7 +71,7 @@ export default function MembershipPDF({ inputValue, razorPayID }) {
         </div>
         <div className="col-lg-3 col-6">
           <p className="pdf-table-text" style={{ padding: "5px" }}>
-            Rs. 300 /-
+            {price == 0 ? "Free" : `Rs. ${price} /-`}
           </p>
         </div>
 
@@ -75,7 +82,8 @@ export default function MembershipPDF({ inputValue, razorPayID }) {
         </div>
         <div className="col-lg-3 col-6">
           <p className="pdf-table-text" style={{ padding: "5px" }}>
-            {razorPayID ? "Success" : "Failed"}
+            {/* {razorPayID ? "Success" : "Failed"} */}
+            {price == 0 ? "Free" : razorPayID ? "Success" : "Failed"}
           </p>
         </div>
 
