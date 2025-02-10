@@ -3,12 +3,14 @@ import { useRouter } from "next/router";
 import { useState, useRef } from "react";
 import { API_URL } from "@/public/constant";
 import { toast } from "react-toastify";
+import Link from "next/link";
 
 export default function EventImage() {
   const ref = useRef();
   const router = useRouter();
   let event_id = router?.query?.event_id;
   let event_name = router?.query?.event_name;
+  const isEdit = router?.query?.isEdit;
 
   const [inputImage, setInputImage] = useState([]);
   const [selectedImages, setSelectedImages] = useState([]);
@@ -28,7 +30,6 @@ export default function EventImage() {
       ref.current.value = "";
       return;
     } else {
-      console.log("Perfect");
       setErrors("");
     }
 
@@ -80,19 +81,25 @@ export default function EventImage() {
 
       if (data.status === true) {
         toast.success("Image Uploaded Successfully");
-        setTimeout(
-          () =>
-            router.push({
-              pathname: "/event",
-            }),
-          4000
-        );
+        setTimeout(() => {
+          isEdit
+            ? router.push({
+                pathname: "/event/edit-event",
+                query: {
+                  event_id: event_id,
+                  event_name: event_name,
+                },
+              })
+            : router.push({
+                pathname: "/event",
+              });
+        }, 2000);
         setTimeout(() => setIsLoading(false), 5000);
       } else {
         toast.error(`Something went wrong!`);
       }
     } catch (error) {
-      console.log(error);
+      console.log("error while uploading image",error);
     } finally {
       setIsLoading(false);
     }
@@ -107,6 +114,9 @@ export default function EventImage() {
               <div className="d-flex align-items-center justify-content-between">
                 <div className="col-md-12">
                   <h4 className="card-title">
+                  <Link className="" href={isEdit?`/event/edit-event?event_id=${event_id}&event_name=${event_name}`:"/event"} style={{ cursor: "pointer" }}>
+                      <i className="bi bi-arrow-left me-2 rounded-circle p-2 bg-secondary text-light"></i>
+                    </Link>
                     Upload Banner Images ( Event-Name -
                     <spna style={{ color: "#7db1d1" }}>
                       {" "}

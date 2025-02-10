@@ -37,23 +37,23 @@ export default function editEvent() {
       if (sessionData.length > 0) {
         console.log("Session Data Found.");
       } else {
-        toast("Session Data Not Found!");
-        setTimeout(
-          () =>
-            router.push({
-              pathname: "/event/event-session",
-              query: {
-                event_id: eventEditData?.id,
-                event_name: eventEditData?.event_name,
-              },
-            }),
-          4000
-        );
-      }      
+        toast.warn("Session Data Not Found!");
+        // setTimeout(
+        //   () =>
+        //     router.push({
+        //       pathname: "/event/event-session",
+        //       query: {
+        //         event_id: eventEditData?.id,
+        //         event_name: eventEditData?.event_name,
+        //         isEdit: true,
+        //       },
+        //     }),
+        //   3000
+        // );
+      }
     }
 
     if (active == "3") {
-
       if (sessionData.length > 0) {
         console.log("Session Data Found.");
         if (eventEditData?.event_imgs.length > 0) {
@@ -67,31 +67,28 @@ export default function editEvent() {
                 query: {
                   event_id: eventEditData?.id,
                   event_name: eventEditData?.event_name,
+                  isEdit: true,
                 },
               }),
-            4000
+            3000
           );
-        }  
+        }
       } else {
-        toast("Session Data Not Found!");
-        setTimeout(
-          () =>
-            router.push({
-              pathname: "/event/event-session",
-              query: {
-                event_id: eventEditData?.id,
-                event_name: eventEditData?.event_name,
-              },
-            }),
-          4000
-        );
-      }      
-
-          
+        // toast.warn("Session Data Not Found!");
+        // setTimeout(
+        //   () =>
+        //     router.push({
+        //       pathname: "/event/event-session",
+        //       query: {
+        //         event_id: eventEditData?.id,
+        //         event_name: eventEditData?.event_name,
+        //       },
+        //     }),
+        //   3000
+        // );
+      }
     }
   };
-
- 
 
   const handleInput = (e) => {
     const { name, value } = e.target;
@@ -354,7 +351,6 @@ export default function editEvent() {
     const formData = new FormData();
     formData.append("event_id", event_id);
     for (let i = 0; i < selectedImages.length; i++) {
-     
       formData.append("images", selectedImages[i]);
     }
 
@@ -368,7 +364,6 @@ export default function editEvent() {
     });
 
     const data = await response.json();
-    
 
     if (data.status === true) {
       toast.success("Image Uploaded Successfully");
@@ -407,13 +402,32 @@ export default function editEvent() {
     }
 
     // const objWithIdIndex = event_img.findIndex((obj) => obj.id === id);
-   
+
     // event_img.splice(objWithIdIndex, 1);
     // setSelectedImages([]);
   };
   /* Update Banner Images End */
 
- 
+  const deleteSession = async (e, sessionId) => {
+    e.preventDefault();
+    try {
+      const response = await axios.delete(
+        `${API_URL}delete-single-event-session/${sessionId}`
+      );
+      if (response.data.status) {
+        toast.success("event-session is deleted successfully");
+        if (event_id !== undefined) {
+          manageSession(event_id);
+        } else {
+          console.log("Data not found");
+        }
+      } else {
+        console.error("deleteSession=======>", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error deleting session:", error.message);
+    }
+  };
 
   return (
     <Layout>
@@ -868,7 +882,7 @@ export default function editEvent() {
                               </thead>
                               <tbody className="mt-5">
                                 {sessionData?.length > 0 ? (
-                                  sessionData?.map((val, index) => {
+                                  sessionData?.map((val, index, arr) => {
                                     return (
                                       <>
                                         <tr key={index} id={index}>
@@ -1035,20 +1049,55 @@ export default function editEvent() {
                                             />
                                           </td>
                                         </tr>
+                                        <tr>
+                                          <td colSpan={7}>
+                                            <textarea
+                                              className="form-control"
+                                              name="description"
+                                              id="description"
+                                              cols="100"
+                                              rows="2"
+                                              value={val?.description}
+                                              onChange={(e) =>
+                                                handleInputSession(e, val?.id)
+                                              }
+                                              placeholder="Description"
+                                            ></textarea>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td colSpan={7}>
+                                            <button
+                                              className="btn btn-primary"
+                                              onClick={(e) =>
+                                                deleteSession(e, val.id)
+                                              }
+                                            >
+                                              remove this session
+                                            </button>
+                                            {index === arr.length - 1 ? (
+                                              ""
+                                            ) : (
+                                              <hr className="w-100" />
+                                            )}
+                                          </td>
+                                        </tr>
                                       </>
                                     );
                                   })
                                 ) : (
                                   <tr>
                                     <td colSpan="7" className="text-center">
-                                      <Dna
+                                      no data found
+                                      {/* <Dna
+                                      
                                         visible={true}
                                         height="80"
                                         width="80"
                                         ariaLabel="dna-loading"
                                         wrapperStyle={{}}
                                         wrapperclassName="dna-wrapper"
-                                      />
+                                      /> */}
                                     </td>
                                   </tr>
                                 )}
@@ -1057,7 +1106,23 @@ export default function editEvent() {
                           </div>
                         </div>
 
-                        <div className="col-md-12 text-left">
+                        <div className="col-md-12 text-left ">
+                          <button
+                            className="btn btn-success me-2"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              router.push({
+                                pathname: "/event/event-session",
+                                query: {
+                                  event_id: eventEditData?.id,
+                                  event_name: eventEditData?.event_name,
+                                  isEdit: true,
+                                },
+                              });
+                            }}
+                          >
+                           {sessionData?.length > 0? "Add More Event-Session":"Add Event-Session"}
+                          </button>
                           {sessionData?.length > 0 ? (
                             <button
                               type="button"

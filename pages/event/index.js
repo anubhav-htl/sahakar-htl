@@ -240,6 +240,7 @@ export default function EventList() {
         <div className="col-md-12 grid-margin stretch-card">
           <div className="card">
             <div className="card-body">
+              {/* START - table header  */}
               <div className="d-flex align-items-center justify-content-between my-3">
                 <div className="col-md-2">
                   <h4 className="card-title">Events List </h4>
@@ -268,6 +269,7 @@ export default function EventList() {
                   </Link>
                 </div>
               </div>
+              {/* END - table header  */}
               <div className="table-responsive event-Table border-all-table">
                 <Table striped bordered hover className="table m-0">
                   <thead>
@@ -383,7 +385,6 @@ export default function EventList() {
                                 </div>
                               </div>
                             </td>
-
                             <td>
                               <b>Start Date:</b>
                               {moment(val?.start_date).format("DD-MM-YYYY")}
@@ -391,7 +392,6 @@ export default function EventList() {
                               <b>End Date:</b>
                               {moment(val?.end_date).format("DD-MM-YYYY")}
                             </td>
-
                             <td>
                               {val?.event_type == "offline" ? (
                                 <div
@@ -456,6 +456,7 @@ export default function EventList() {
                               )}
                             </td>
                             <td>
+                            <div className="d-flex  gap-3">
                               <i
                                 className="bi bi-eye-fill"
                                 data-bs-toggle="modal"
@@ -468,30 +469,30 @@ export default function EventList() {
                               ></i>
                               {moment(val?.end_date).format("YYYY-MM-DD") <
                               c_date ? (
-                                <i
-                                  className="bi bi-pencil"
-                                  style={{
-                                    margin: "0px 15px",
-                                    cursor: "pointer",
-                                  }}
-                                ></i>
-                              ) : moment(val?.start_date).format(
-                                  "YYYY-MM-DD"
-                                ) <= c_date &&
+                                ""
+                              ) : // <i
+                              //   className="bi bi-pencil"
+                              //   style={{
+                              //     margin: "0px 15px",
+                              //     cursor: "not-allowed",
+                              //   }}
+                              // ></i>
+                              moment(val?.start_date).format("YYYY-MM-DD") <=
+                                  c_date &&
                                 moment(val?.end_date).format("YYYY-MM-DD") >=
                                   c_date ? (
-                                <i
-                                  className="bi bi-pencil"
-                                  style={{
-                                    margin: "0px 15px",
-                                    cursor: "pointer",
-                                  }}
-                                ></i>
+                                ""
                               ) : (
+                                // <i
+                                //   className="bi bi-pencil"
+                                //   style={{
+                                //     margin: "0px 15px",
+                                //     cursor: "not-allowed",
+                                //   }}
+                                // ></i>
                                 <i
                                   className="bi bi-pencil"
                                   style={{
-                                    margin: "0px 15px",
                                     cursor: "pointer",
                                   }}
                                   onClick={() =>
@@ -507,7 +508,6 @@ export default function EventList() {
                                   style={{
                                     cursor: "pointer",
                                     color: "#012970",
-                                    marginRight: "15px",
                                   }}
                                   data-bs-toggle="modal"
                                   data-bs-target={"#PublishEvent" + index + 1}
@@ -518,7 +518,6 @@ export default function EventList() {
                                   style={{
                                     cursor: "pointer",
                                     color: "#012970",
-                                    marginRight: "15px",
                                   }}
                                 ></i>
                               ) : (
@@ -527,7 +526,6 @@ export default function EventList() {
                                   style={{
                                     cursor: "pointer",
                                     color: "#012970",
-                                    marginRight: "15px",
                                   }}
                                   data-bs-toggle="modal"
                                   data-bs-target={
@@ -654,7 +652,6 @@ export default function EventList() {
                               <i
                                 className="bi bi-people-fill"
                                 style={{
-                                  marginLeft: "15px",
                                   cursor: "pointer",
                                 }}
                                 onClick={() =>
@@ -1193,6 +1190,7 @@ export default function EventList() {
                                 ""
                               )}
                               {/* Not uploaded user modal end */}
+                             </div>
                             </td>
                           </tr>
                         );

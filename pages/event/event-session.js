@@ -8,11 +8,13 @@ import { Dna } from "react-loader-spinner";
 import moment from "moment";
 import { Table } from "react-bootstrap";
 import { toast } from "react-toastify";
+import Link from "next/link";
 
 export default function CreateSession() {
   const router = useRouter();
   let event_id = router?.query?.event_id;
   let event_name = router?.query?.event_name;
+  const isEdit = router?.query?.isEdit;
   let eventId = "";
 
   const ISSERVER = typeof window === "undefined";
@@ -24,7 +26,7 @@ export default function CreateSession() {
 
   const initialValueCounter = [
     {
-      event_id: eventId,
+      event_id: event_id,
       session_name: "",
       event_date: "",
       start_session: "",
@@ -190,19 +192,18 @@ export default function CreateSession() {
           //   errors[id].gift = `Gift Field (required)`;
           // }
 
-          if (
-            !value.attendance ||
-            value.attendance === null ||
-            value.lunch === "0"
-          ) {
-            errors[id].attendance = `Attendance Field (required)`;
-          }
+          // if (
+          //   !value.attendance ||
+          //   value.attendance === null ||
+          //   value.lunch === "0"
+          // ) {
+          //   errors[id].attendance = `Attendance Field (required)`;
+          // }
         }
 
         setErrors(errors);
         return errors;
       });
-
       const allEmpty = Object.values(errors).every(
         (obj) => Object.keys(obj).length === 0
       );
@@ -231,17 +232,23 @@ export default function CreateSession() {
 
       if (data.status === true) {
         toast.success("Session Created Successfully");
-        setTimeout(
-          () =>
-            router.push({
-              pathname: "/event/event-images",
-              query: {
-                event_id: event_id,
-                event_name: event_name,
-              },
-            }),
-          4000
-        );
+        setTimeout(() => {
+          isEdit
+            ? router.push({
+                pathname: "/event/edit-event",
+                query: {
+                  event_id: event_id,
+                  event_name: event_name,
+                },
+              })
+            : router.push({
+                pathname: "/event/event-images",
+                query: {
+                  event_id: event_id,
+                  event_name: event_name,
+                },
+              });
+        }, 2000);
         setTimeout(() => setIsLoading(false), 5000);
       } else {
         toast.error(`Something went wrong!`);
@@ -316,6 +323,9 @@ export default function CreateSession() {
               <div className="d-flex align-items-center justify-content-between">
                 <div className="col-md-12">
                   <h4 className="card-title">
+                    <Link className="" href={isEdit?`/event/edit-event?event_id=${event_id}&event_name=${event_name}`:"/event"} style={{ cursor: "pointer" }}>
+                      <i className="bi bi-arrow-left me-2 rounded-circle p-2 bg-secondary text-light"></i>
+                    </Link>
                     Create Session ( Event-Name -
                     <spna style={{ color: "#7db1d1" }}>
                       {" "}
