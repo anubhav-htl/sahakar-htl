@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 export default function Header() {
     return (
@@ -71,12 +72,12 @@ export default function Header() {
                                         </div>
 
                                         <ul class="footer-one__single-explore-list">
-                                            <li><a href="#"><i class="fa fa-angle-double-right" aria-hidden="true"></i>About Us</a></li>
-                                            <li><a href="#"><i class="fa fa-angle-double-right" aria-hidden="true"></i>Activities</a></li>
-                                            <li><a href="#"><i class="fa fa-angle-double-right" aria-hidden="true"></i>Adhiveshan</a></li>
-                                            <li><a href="#"><i class="fa fa-angle-double-right" aria-hidden="true"></i>Awards</a></li>
-                                            <li><a href="#"><i class="fa fa-angle-double-right" aria-hidden="true"></i>Events</a></li>
-                                            <li><a href="#"><i class="fa fa-angle-double-right" aria-hidden="true"></i>Latest Updates</a></li>
+                                            <li><Link href="/about-us"><i class="fa fa-angle-double-right" aria-hidden="true"></i>About Us</Link></li>
+                                            <li><Link href="/activities"><i class="fa fa-angle-double-right" aria-hidden="true"></i>Activities</Link></li>
+                                            <li><Link href="/adhiveshan"><i class="fa fa-angle-double-right" aria-hidden="true"></i>Adhiveshan</Link></li>
+                                            <li><Link href="/awards"><i class="fa fa-angle-double-right" aria-hidden="true"></i>Awards</Link></li>
+                                            <li><Link href="/event/events"><i class="fa fa-angle-double-right" aria-hidden="true"></i>Events</Link></li>
+                                            <li><Link href="/latest-updates"><i class="fa fa-angle-double-right" aria-hidden="true"></i>Latest Updates</Link></li>
                                         </ul>
                                     </div>
                                 </div>
