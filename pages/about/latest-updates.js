@@ -18,10 +18,10 @@ export default function LatestUpdates() {
             <h2 class="entry-title mb-0">
               <a
                 href="#"
-                // href="https://sahakarbharati.org/2021/02/05/activities-of-sahakar-bharati/"
+                // href="https://SAHAKARDATA.org/2021/02/05/activities-of-sahakar-Data/"
                 rel="bookmark"
               >
-                Latest Updates Of Sahakar Bharati
+                Latest Updates Of SAHAKARDATA
               </a>
             </h2>{" "}
             <div class="entry-content">

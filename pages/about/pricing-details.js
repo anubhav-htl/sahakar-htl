@@ -17,17 +17,17 @@ export default function PriceDetails() {
               }}
             >
               {" "}
-              Pricing and Membership Details of Sahkar Bharati
+              Pricing and Membership Details of SAHAKARDATA
             </h2>
             <div class="entry-categories">
-              Sahkar Bharati, a national-level organization dedicated to the
+              SAHAKARDATA, a national-level organization dedicated to the
               cooperative movement, operates a membership model to support its
               initiatives. Below are key insights into its pricing structure and
               related activities:
             </div>
            
             <div class="entry-content">
-              Sahkar Bharati is a pan-India organization focused on supporting
+              SAHAKARDATA is a pan-India organization focused on supporting
               cooperatives and cooperative movements. It primarily operates on a
               membership-based model and offers both life memberships and
               participation in its various initiatives and activities. The
@@ -38,7 +38,7 @@ export default function PriceDetails() {
               programs, and national-level conferences that align with its
               objectives. If you are interested in specific pricing for
               membership or activities, it would be best to directly contact
-              their offices, as Sahkar Bharati has offices across many states in
+              their offices, as SAHAKARDATA has offices across many states in
               India. Their main offices are in Dombivli and Mumbai, Maharashtra.
               For detailed inquiries, they also offer a registration portal and
               contact options online​ SAHAKAR BHARATI ​ SAHKAR ​ INDIAN

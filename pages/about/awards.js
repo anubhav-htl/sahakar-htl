@@ -18,10 +18,10 @@ export default function Awards() {
             <h2 class="entry-title mb-0">
               <a
                 href="#"
-                // href="https://sahakarbharati.org/2021/02/05/activities-of-sahakar-bharati/"
+                // href="https://SAHAKARDATA.org/2021/02/05/activities-of-sahakar-Data/"
                 rel="bookmark"
               >
-                Awards Of Sahakar Bharati
+                Awards Of SAHAKARDATA
               </a>
             </h2>{" "}
             <div class="entry-content">

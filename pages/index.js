@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import Header from "./home/header";
-import Footer from "./home/footer";
+import Footer from "../component/footer";
 import Link from "next/link";
 import axios from "axios";
 import sahkarImg from "../styles/assets/images/sahkarimglogo.png";

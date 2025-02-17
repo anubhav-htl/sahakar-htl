@@ -72,12 +72,15 @@ export default function Header() {
                                         </div>
 
                                         <ul class="footer-one__single-explore-list">
-                                            <li><Link href="/about-us"><i class="fa fa-angle-double-right" aria-hidden="true"></i>About Us</Link></li>
-                                            <li><Link href="/activities"><i class="fa fa-angle-double-right" aria-hidden="true"></i>Activities</Link></li>
-                                            <li><Link href="/adhiveshan"><i class="fa fa-angle-double-right" aria-hidden="true"></i>Adhiveshan</Link></li>
-                                            <li><Link href="/awards"><i class="fa fa-angle-double-right" aria-hidden="true"></i>Awards</Link></li>
-                                            <li><Link href="/event/events"><i class="fa fa-angle-double-right" aria-hidden="true"></i>Events</Link></li>
-                                            <li><Link href="/latest-updates"><i class="fa fa-angle-double-right" aria-hidden="true"></i>Latest Updates</Link></li>
+                                            <li><Link href="/about"><i class="fa fa-angle-double-right me-2" aria-hidden="true"></i>About Us</Link></li>
+                                            <li><Link href="/about/activities"><i class="fa fa-angle-double-right me-2" aria-hidden="true"></i>Activities</Link></li>
+                                            <li><Link href="/about/adhiveshan"><i class="fa fa-angle-double-right me-2" aria-hidden="true"></i>Adhiveshan</Link></li>
+                                            <li><Link href="/about/awards"><i class="fa fa-angle-double-right me-2" aria-hidden="true"></i>Awards</Link></li>
+                                            <li><Link href="/about/events"><i class="fa fa-angle-double-right me-2" aria-hidden="true"></i>Events</Link></li>
+                                            <li><Link href="/about/latest-updates"><i class="fa fa-angle-double-right me-2" aria-hidden="true"></i>Latest Updates</Link></li>
+                                            <li><Link href="/about/privacy-policy"><i class="fa fa-angle-double-right me-2" aria-hidden="true"></i>Privacy Policy</Link></li>
+                                            <li><Link href="/about/terms-conditions"><i class="fa fa-angle-double-right me-2" aria-hidden="true"></i>Terms Conditions</Link></li>
+                                            <li><Link href="/about/refund-policy"><i class="fa fa-angle-double-right me-2" aria-hidden="true"></i>Refund Policy</Link></li>
                                         </ul>
                                     </div>
                                 </div>
