@@ -1,198 +1,345 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import axios from "axios";
+import { API_URL } from "../../public/constant";
 import { stateCity } from "@/public/statecityobject";
+import { FaRegEyeSlash, FaRegEye } from "react-icons/fa";
+import Layout from "../admin";
 
-const CreateUserForm = () => {
+const RegistrationForm = () => {
   const [formData, setFormData] = useState({
-    name: "",
+    first_name: "",
+    last_name: "",
     email: "",
-    phone: "",
-    password: "",
+    contact_number: "",
+    designation: "",
     state: "",
+    password: "",
+    confirm_password: "",
+    gender: "",
+    address: "",
   });
 
-  const [errors, setErrors] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    password: "",
-    state: "",
-  });
+  const [errors, setErrors] = useState({});
+  const [apiError, setApiError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData({ ...formData, [name]: value });
+    setErrors({ ...errors, [name]: "" });
+  };
+
+  const togglePasswordVisibility = (field) => {
+    if (field === "password") {
+      setShowPassword(!showPassword);
+    } else if (field === "confirm_password") {
+      setShowConfirmPassword(!showConfirmPassword);
+    }
   };
 
   const validateForm = () => {
-    let isValid = true;
-    const newErrors = {
-      name: "",
-      email: "",
-      phone: "",
-      password: "",
-      state: "",
-    };
-
-    // Name validation
-    if (!formData.name) {
-      newErrors.name = "Name is required";
-      isValid = false;
-    } else if (formData.name.length < 3 || formData.name.length > 20) {
-      newErrors.name = "Name must be between 3 and 20 characters";
-      isValid = false;
-    }
-
-    // Email validation
-    if (!formData.email) {
-      newErrors.email = "Email is required";
-      isValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid";
-      isValid = false;
-    }
-
-    // Phone validation
-    if (!formData.phone) {
-      newErrors.phone = "Phone is required";
-      isValid = false;
-    } else if (formData.phone.length !== 10) {
-      newErrors.phone = "Phone must be 10 digits";
-      isValid = false;
-    }
-
-    // Password validation
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-      isValid = false;
-    }
-
-    // State validation
-    if (!formData.state) {
-      newErrors.state = "State is required";
-      isValid = false;
-    }
+    const newErrors = {};
+    if (!formData.first_name) newErrors.first_name = "First name is required.";
+    if (!formData.last_name) newErrors.last_name = "Last name is required.";
+    if (!formData.email) newErrors.email = "Email is required.";
+    if (!formData.contact_number)
+      newErrors.contact_number = "Contact number is required.";
+    if (!formData.designation)
+      newErrors.designation = "Designation is required.";
+    if (!formData.state || formData.state === "Select State")
+      newErrors.state = "State is required.";
+    if (!formData.password) newErrors.password = "Password is required.";
+    if (!formData.confirm_password)
+      newErrors.confirm_password = "Confirm password is required.";
+    if (!formData.gender) newErrors.gender = "Gender is required.";
+    if (!formData.address) newErrors.address = "Address is required.";
+    if (formData.password !== formData.confirm_password)
+      newErrors.confirm_password = "Passwords do not match.";
 
     setErrors(newErrors);
-    return isValid;
+    return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      console.log("Form submitted successfully:", formData);
-      // You can add your API call or further logic here
-    } else {
-      console.log("Form validation failed");
+    if (!validateForm()) return;
+
+    try {
+      const adminLogin = JSON.parse(localStorage.getItem("AdminLogin"))?.token;
+      const response = await axios.post(
+        `${API_URL}state-wise-registration`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${adminLogin}`, // Add Authorization header
+            "Content-Type": "application/json", // Ensure correct content type
+          },
+        }
+      );
+      if (response.data.status) {
+        setSuccessMessage("Registration successful!");
+        setApiError("");
+        setFormData({
+          first_name: "",
+          last_name: "",
+          email: "",
+          contact_number: "",
+          designation: "",
+          state: "",
+          password: "",
+          confirm_password: "",
+          gender: "",
+          address: "",
+        });
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      setApiError(
+        error.response?.data?.message ||
+          "Registration failed. Please try again."
+      );
+      setSuccessMessage("");
     }
   };
 
   return (
-    <div className="container mt-5">
-      <h2>Create User</h2>
-      <form onSubmit={handleSubmit}>
-        {/* Name Field */}
-        <div className="mb-3">
-          <label htmlFor="name" className="form-label">
-            Name
-          </label>
-          <input
-            type="text"
-            className={`form-control ${errors.name ? "is-invalid" : ""}`}
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-          />
-          {errors.name && <div className="invalid-feedback">{errors.name}</div>}
-        </div>
+    <Layout>
+      <div className="container mt-5">
+        <div className="row justify-content-center">
+          <div className="col-md-8">
+            <div className="card">
+              <div className="card-body">
+                <h2 className="card-title text-center">Registration Form</h2>
+                {apiError && (
+                  <div className="alert alert-danger">{apiError}</div>
+                )}
+                {successMessage && (
+                  <div className="alert alert-success">{successMessage}</div>
+                )}
 
-        {/* Email Field */}
-        <div className="mb-3">
-          <label htmlFor="email" className="form-label">
-            Email
-          </label>
-          <input
-            type="email"
-            className={`form-control ${errors.email ? "is-invalid" : ""}`}
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-          {errors.email && (
-            <div className="invalid-feedback">{errors.email}</div>
-          )}
-        </div>
+                <form onSubmit={handleSubmit}>
+                  <div className="row">
+                    {/* First Name & Last Name */}
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">First Name</label>
+                      <input
+                        type="text"
+                        className={`form-control ${
+                          errors.first_name ? "is-invalid" : ""
+                        }`}
+                        name="first_name"
+                        value={formData.first_name}
+                        onChange={handleChange}
+                      />
+                      {errors.first_name && (
+                        <div className="invalid-feedback">
+                          {errors.first_name}
+                        </div>
+                      )}
+                    </div>
 
-        {/* Phone Field */}
-        <div className="mb-3">
-          <label htmlFor="phone" className="form-label">
-            Phone
-          </label>
-          <input
-            type="text"
-            className={`form-control ${errors.phone ? "is-invalid" : ""}`}
-            id="phone"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-          />
-          {errors.phone && (
-            <div className="invalid-feedback">{errors.phone}</div>
-          )}
-        </div>
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Last Name</label>
+                      <input
+                        type="text"
+                        className={`form-control ${
+                          errors.last_name ? "is-invalid" : ""
+                        }`}
+                        name="last_name"
+                        value={formData.last_name}
+                        onChange={handleChange}
+                      />
+                      {errors.last_name && (
+                        <div className="invalid-feedback">
+                          {errors.last_name}
+                        </div>
+                      )}
+                    </div>
 
-        {/* Password Field */}
-        <div className="mb-3">
-          <label htmlFor="password" className="form-label">
-            Password
-          </label>
-          <input
-            type="password"
-            className={`form-control ${errors.password ? "is-invalid" : ""}`}
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-          />
-          {errors.password && (
-            <div className="invalid-feedback">{errors.password}</div>
-          )}
-        </div>
-        <div className="col-md-3 my-3"></div>
+                    {/* Email & Contact Number */}
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Email</label>
+                      <input
+                        type="email"
+                        className={`form-control ${
+                          errors.email ? "is-invalid" : ""
+                        }`}
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                      />
+                      {errors.email && (
+                        <div className="invalid-feedback">{errors.email}</div>
+                      )}
+                    </div>
 
-        {/* State Field */}
-        <div className="mb-3">
-          <label className="form-label">State</label>
-          <select
-            className={`form-select ${errors.state ? "is-invalid" : ""}`}
-            id="state"
-            name="state"
-            value={formData.state}
-            onChange={handleChange}
-          >
-            <option value="">Select State</option>
-            {Object.keys(stateCity).map((state) => (
-              <option key={state} value={state}>
-                {state}
-              </option>
-            ))}
-          </select>
-          {errors.state && (
-            <div className="invalid-feedback">{errors.state}</div>
-          )}
-        </div>
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Contact Number</label>
+                      <input
+                        type="text"
+                        className={`form-control ${
+                          errors.contact_number ? "is-invalid" : ""
+                        }`}
+                        name="contact_number"
+                        value={formData.contact_number}
+                        onChange={handleChange}
+                      />
+                      {errors.contact_number && (
+                        <div className="invalid-feedback">
+                          {errors.contact_number}
+                        </div>
+                      )}
+                    </div>
 
-        {/* Submit Button */}
-        <button type="submit" className="btn btn-primary">
-          Create User
-        </button>
-      </form>
-    </div>
+                    {/* Designation & State */}
+                    <div className="col-md-12 mb-3">
+                      <label className="form-label">Designation</label>
+                      <input
+                        type="text"
+                        className={`form-control ${
+                          errors.designation ? "is-invalid" : ""
+                        }`}
+                        name="designation"
+                        value={formData.designation}
+                        onChange={handleChange}
+                      />
+                      {errors.designation && (
+                        <div className="invalid-feedback">
+                          {errors.designation}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">State</label>
+                      <select
+                        className={`form-control ${
+                          errors.state ? "is-invalid" : ""
+                        }`}
+                        name="state"
+                        value={formData.state}
+                        onChange={handleChange}
+                      >
+                        <option value="">Select State</option>
+                        {Object.keys(stateCity).map((state) => (
+                          <option key={state} value={state}>
+                            {state}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.state && (
+                        <div className="invalid-feedback">{errors.state}</div>
+                      )}
+                    </div>
+                    {/* Gender & Address */}
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Gender</label>
+                      <select
+                        className={`form-control ${
+                          errors.gender ? "is-invalid" : ""
+                        }`}
+                        name="gender"
+                        value={formData.gender}
+                        onChange={handleChange}
+                      >
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                      </select>
+                      {errors.gender && (
+                        <div className="invalid-feedback">{errors.gender}</div>
+                      )}
+                    </div>
+
+                    {/* Password & Confirm Password */}
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Password</label>
+                      <div className="input-group">
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          className={`form-control ${
+                            errors.password ? "is-invalid" : ""
+                          }`}
+                          name="password"
+                          value={formData.password}
+                          onChange={handleChange}
+                        />
+                        <span
+                          className="input-group-text"
+                          onClick={() => togglePasswordVisibility("password")}
+                        >
+                          {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
+                        </span>
+                        {errors.password && (
+                          <div className="invalid-feedback">
+                            {errors.password}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Confirm Password</label>
+                      <div className="input-group">
+                        <input
+                          type={showConfirmPassword ? "text" : "password"}
+                          className={`form-control ${
+                            errors.confirm_password ? "is-invalid" : ""
+                          }`}
+                          name="confirm_password"
+                          value={formData.confirm_password}
+                          onChange={handleChange}
+                        />
+                        <span
+                          className="input-group-text"
+                          onClick={() =>
+                            togglePasswordVisibility("confirm_password")
+                          }
+                        >
+                          {showConfirmPassword ? (
+                            <FaRegEyeSlash />
+                          ) : (
+                            <FaRegEye />
+                          )}
+                        </span>
+                        {errors.confirm_password && (
+                          <div className="invalid-feedback">
+                            {errors.confirm_password}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="col-md-12 mb-3">
+                      <label className="form-label">Address</label>
+                      <textarea
+                        rows={4}
+                        className={`form-control ${
+                          errors.address ? "is-invalid" : ""
+                        }`}
+                        name="address"
+                        value={formData.address}
+                        onChange={handleChange}
+                      />
+                      {errors.address && (
+                        <div className="invalid-feedback">{errors.address}</div>
+                      )}
+                    </div>
+                  </div>
+
+                  <button type="submit" className="btn btn-primary w-100">
+                    Register
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Layout>
   );
 };
 
-export default CreateUserForm;
+export default RegistrationForm;

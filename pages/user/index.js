@@ -34,6 +34,7 @@ export default function User() {
   const [stateName, setStateName] = useState("");
 
   let adminToken = "";
+  let stateValue = "";
   //   useEffect(() => {
   //     const Token = JSON.parse(localStorage.getItem("AdminLogin"));
   //     const token = Token.token;
@@ -42,9 +43,18 @@ export default function User() {
 
   const ISSERVER = typeof window === "undefined";
   if (!ISSERVER) {
+    const adminLogin = JSON.parse(localStorage.getItem("AdminLogin"));
+    const stateWiseLogin = JSON.parse(localStorage.getItem("StateWiseLogin"));
     // Access localStorage
-    const item = JSON.parse(localStorage.getItem("AdminLogin"));
-    adminToken = item?.token;
+    if (adminLogin) {
+      adminToken = adminLogin?.token;
+    } else if (stateWiseLogin) {
+      adminToken = stateWiseLogin?.token;
+      stateValue = stateWiseLogin?.data?.state;
+    } else {
+      console.log("errror");
+    }
+    // const item = JSON.parse(localStorage.getItem("AdminLogin"));
   }
 
   // search fielter data
@@ -126,7 +136,6 @@ export default function User() {
   const [pdfLoading, setPdfLoading] = useState(false);
 
   const handlePdfDownload = (data) => {
-    console.log("data==>", data);
     const pdfContentData = {
       registerDate: data.created_at,
       memberShipId: data?.id ? `LM-${data?.id}` : "Not Available",
@@ -234,8 +243,10 @@ export default function User() {
   const User = async (userTabActive) => {
     try {
       setIsLoading(true);
-      const url = `${API_URL}all-membership/${userTabActive}/?state=${stateName}`;
-  
+      const url = `${API_URL}all-membership/${userTabActive}/?state=${
+        stateValue !== "" ? stateValue : stateName
+      }`;
+
       const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -243,13 +254,13 @@ export default function User() {
           "Content-Type": "application/json",
         },
       });
-  
+
       if (!response.ok) {
         throw new Error(`Error: ${response.status} - ${response.statusText}`);
       }
-  
+
       const data = await response.json();
-      
+
       setUserData(data?.data || []);
       setPageDataCount(data?.count || 0);
     } catch (error) {
@@ -258,13 +269,13 @@ export default function User() {
       setIsLoading(false);
     }
   };
-  
+
   const handletabs = (active) => {
     setUserTabActive(active);
   };
   useEffect(() => {
     User(userTabActive);
-  }, [userTabActive, pageChange, pageChangeMember, stateName,toggleLoading]);
+  }, [userTabActive, pageChange, pageChangeMember, stateName, toggleLoading]);
   // END - Fetch the all Membership functionality
   return (
     <>
@@ -299,23 +310,25 @@ export default function User() {
                   </div>
                 </div>
                 {/* ---------- START Filter Dropdown ----------  */}
-                <div className="col-md-3 my-3">
-                  <label className="form-label">Filter by State</label>
-                  <select
-                    className="form-select  "
-                    id="inputState"
-                    onChange={handleStateChange}
-                    name="state"
-                    // value={formData.state}
-                  >
-                    <option value="">Select State</option>
-                    {Object.keys(stateCity).map((state) => (
-                      <option key={state} value={state}>
-                        {state}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                {stateValue === "" && (
+                  <div className="col-md-3 my-3">
+                    <label className="form-label">Filter by State</label>
+                    <select
+                      className="form-select  "
+                      id="inputState"
+                      onChange={handleStateChange}
+                      name="state"
+                      // value={formData.state}
+                    >
+                      <option value="">Select State</option>
+                      {Object.keys(stateCity).map((state) => (
+                        <option key={state} value={state}>
+                          {state}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
                 {/* tabs start */}
                 <ul
@@ -473,116 +486,107 @@ export default function User() {
                                       </td>
 
                                       <td>
-                                        {/* <button
-                                  type="button"
-                                  className="btn btn-link p-0"
-                                  onClick={() => editMemberPage(val?.id)}
-                                >
-                                  <i
-                                    className="bi bi-pencil "
-                                    style={{ cursor: "pointer" }}
-                                  ></i>
-                                </button>
-                                &nbsp;&nbsp;&nbsp; */}
-                                        <div className="d-flex gap-2">
-                                          <div class="form-check form-switch">
-                                            <input
-                                              class="form-check-input"
-                                              type="checkbox"
-                                              checked={
-                                                val.status === "1"
-                                                  ? true
-                                                  : false
-                                              }
-                                              onClick={() =>
-                                                toggleStatus(val.id)
-                                              }
-                                            />
-                                          </div>
-                                          {val.payment_id && (
+                                        {stateValue === "" && (
+                                          <div className="d-flex gap-2">
+                                            <div class="form-check form-switch">
+                                              <input
+                                                class="form-check-input"
+                                                type="checkbox"
+                                                checked={
+                                                  val.status === "1"
+                                                    ? true
+                                                    : false
+                                                }
+                                                onClick={() =>
+                                                  toggleStatus(val.id)
+                                                }
+                                              />
+                                            </div>
+                                            {val.payment_id && (
+                                              <button
+                                                type="button"
+                                                className="btn btn-link p-0"
+                                                onClick={() => {
+                                                  handlePdfDownload(val);
+                                                }}
+                                              >
+                                                <i
+                                                  class="bi bi-download"
+                                                  style={{ cursor: "pointer" }}
+                                                ></i>
+                                              </button>
+                                            )}
                                             <button
                                               type="button"
                                               className="btn btn-link p-0"
-                                              onClick={() => {
-                                                handlePdfDownload(val);
-                                              }}
+                                              data-bs-toggle="modal"
+                                              data-bs-target={
+                                                "#deleteUser" + val?.id
+                                              }
                                             >
                                               <i
-                                                class="bi bi-download"
+                                                className="bi bi-trash text-danger"
                                                 style={{ cursor: "pointer" }}
                                               ></i>
                                             </button>
-                                          )}
-                                          <button
-                                            type="button"
-                                            className="btn btn-link p-0"
-                                            data-bs-toggle="modal"
-                                            data-bs-target={
-                                              "#deleteUser" + val?.id
-                                            }
-                                          >
-                                            <i
-                                              className="bi bi-trash text-danger"
-                                              style={{ cursor: "pointer" }}
-                                            ></i>
-                                          </button>
-                                          <div
-                                            className="modal fade"
-                                            id={"deleteUser" + val?.id}
-                                            data-bs-backdrop="static"
-                                            data-bs-keyboard="false"
-                                            tabindex="-1"
-                                            aria-labelledby={
-                                              "deleteUserLabel" + val?.id
-                                            }
-                                            aria-hidden="true"
-                                          >
-                                            <div className="modal-dialog">
-                                              <div className="modal-content">
-                                                <div className="modal-header">
-                                                  <h5
-                                                    className="modal-title"
-                                                    id="staticBackdropLabel"
-                                                  >
-                                                    Delete User
-                                                  </h5>
-                                                  <button
-                                                    type="button"
-                                                    className="btn-close"
-                                                    data-bs-dismiss="modal"
-                                                    aria-label="Close"
-                                                  ></button>
-                                                </div>
-                                                <div className="modal-body">
-                                                  Do you really want to delete{" "}
-                                                  <strong>
-                                                    {val?.member_name}
-                                                  </strong>{" "}
-                                                  as member.
-                                                </div>
-                                                <div className="modal-footer">
-                                                  <button
-                                                    type="button"
-                                                    className="btn btn-secondary"
-                                                    data-bs-dismiss="modal"
-                                                  >
-                                                    Cancel
-                                                  </button>
-                                                  <button
-                                                    type="button"
-                                                    className="btn btn-danger"
-                                                    data-bs-dismiss="modal"
-                                                    onClick={() =>
-                                                      deleteUser(val?.id)
-                                                    }
-                                                  >
-                                                    Delete
-                                                  </button>
+                                            <div
+                                              className="modal fade"
+                                              id={"deleteUser" + val?.id}
+                                              data-bs-backdrop="static"
+                                              data-bs-keyboard="false"
+                                              tabindex="-1"
+                                              aria-labelledby={
+                                                "deleteUserLabel" + val?.id
+                                              }
+                                              aria-hidden="true"
+                                            >
+                                              <div className="modal-dialog">
+                                                <div className="modal-content">
+                                                  <div className="modal-header">
+                                                    <h5
+                                                      className="modal-title"
+                                                      id="staticBackdropLabel"
+                                                    >
+                                                      Delete User
+                                                    </h5>
+                                                    <button
+                                                      type="button"
+                                                      className="btn-close"
+                                                      data-bs-dismiss="modal"
+                                                      aria-label="Close"
+                                                    ></button>
+                                                  </div>
+                                                  <div className="modal-body">
+                                                    Do you really want to delete{" "}
+                                                    <strong>
+                                                      {val?.member_name}
+                                                    </strong>{" "}
+                                                    as member.
+                                                  </div>
+                                                  <div className="modal-footer">
+                                                    <button
+                                                      type="button"
+                                                      className="btn btn-secondary"
+                                                      data-bs-dismiss="modal"
+                                                    >
+                                                      Cancel
+                                                    </button>
+                                                    <button
+                                                      type="button"
+                                                      className="btn btn-danger"
+                                                      data-bs-dismiss="modal"
+                                                      onClick={() =>
+                                                        deleteUser(val?.id)
+                                                      }
+                                                    >
+                                                      Delete
+                                                    </button>
+                                                  </div>
                                                 </div>
                                               </div>
                                             </div>
                                           </div>
-                                        </div>
+                                        )}
                                       </td>
                                     </tr>
                                   );

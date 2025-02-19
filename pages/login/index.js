@@ -31,10 +31,8 @@ export default function Home() {
         },
       });
       const data = await response.json();
-      console.log("data---------SSSS", data);
-      if (data.status == true) {
-        if (data.data.role_id == 2) {
-          // if (data.status === true) {
+      if (data.status) {
+        if (data.data.role_id === 2) {
           localStorage.setItem(
             "AdminLogin",
             JSON.stringify({
@@ -52,13 +50,8 @@ export default function Home() {
               "Content-Type": "application/json",
             },
           };
-          if (data.status === true) {
-            Router.push("/admin/dashboard");
-          } else {
-            toast("Login id or password wrong!");
-          }
-        }
-        if (data.data.role_id == 5) {
+          Router.push("/admin/dashboard");
+        } else if (data.data.role_id == 5) {
           localStorage.setItem(
             "CoopSocietyLogin",
             JSON.stringify({
@@ -76,11 +69,26 @@ export default function Home() {
               "Content-Type": "application/json",
             },
           };
-          if (data.status === true) {
-            Router.push("/registration");
-          } else {
-            toast("Login id or password wrong!");
-          }
+          Router.push("/registration");
+        } else if (data.data.role_id === 6) {
+          localStorage.setItem(
+            "StateWiseLogin",
+            JSON.stringify({
+              login: true,
+              token: data.accessToken,
+              data: data.data,
+            })
+          );
+
+          const Token = JSON.parse(localStorage.getItem("StateWiseLogin"));
+          const token = Token.token;
+          const header = {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          };
+          Router.push("/user");
         } else {
           localStorage.setItem(
             "VolunteerLogin",
@@ -99,11 +107,7 @@ export default function Home() {
               "Content-Type": "application/json",
             },
           };
-          if (data.status === true) {
-            Router.push("/volunteer/dashboard");
-          } else {
-            toast("Login id or password wrong!");
-          }
+          Router.push("/volunteer/dashboard");
         }
       } else {
         toast.warning(data.message);

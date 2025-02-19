@@ -28,12 +28,27 @@ export default function Agency() {
   const [stateName, setStateName] = useState("");
 
   let adminToken = "";
-
+  let stateValue = "";
+  // const ISSERVER = typeof window === "undefined";
+  // if (!ISSERVER) {
+  //   // Access localStorage
+  //   const item = JSON.parse(localStorage.getItem("AdminLogin"));
+  //   adminToken = item?.token;
+  // }
   const ISSERVER = typeof window === "undefined";
   if (!ISSERVER) {
+    const adminLogin = JSON.parse(localStorage.getItem("AdminLogin"));
+    const stateWiseLogin = JSON.parse(localStorage.getItem("StateWiseLogin"));
     // Access localStorage
-    const item = JSON.parse(localStorage.getItem("AdminLogin"));
-    adminToken = item?.token;
+    if (adminLogin) {
+      adminToken = adminLogin?.token;
+    } else if (stateWiseLogin) {
+      adminToken = stateWiseLogin?.token;
+      stateValue = stateWiseLogin?.data?.state;
+    } else {
+      console.log("errror");
+    }
+    // const item = JSON.parse(localStorage.getItem("AdminLogin"));
   }
 
   const [searchData, setSearchData] = useState("");
@@ -193,7 +208,7 @@ export default function Agency() {
       }
     } catch (error) {
       console.error("Error toggling status:", error.message);
-    }finally {
+    } finally {
       setToggleLoading(false);
     }
   };
@@ -204,8 +219,10 @@ export default function Agency() {
     try {
       setIsLoading(true);
       const limit = 10;
-      const url = `${API_URL}coopSociety-list/?page=${pageChange}&limit=${limit}&state=${stateName}`;
-  
+      const url = `${API_URL}coopSociety-list/?page=${pageChange}&limit=${limit}&state=${
+        stateValue !== "" ? stateValue : stateName
+      }`;
+
       const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -213,13 +230,13 @@ export default function Agency() {
           "Content-Type": "application/json",
         },
       });
-  
+
       if (!response.ok) {
         throw new Error(`Error: ${response.status} - ${response.statusText}`);
       }
-  
+
       const data = await response.json();
-      
+
       setAgencyData(data?.data || []);
       setPageDataCount(data?.count || 0);
     } catch (error) {
@@ -230,7 +247,7 @@ export default function Agency() {
   };
   useEffect(() => {
     GetAgency();
-  }, [pageChange, stateName,toggleLoading]);
+  }, [pageChange, stateName, toggleLoading]);
   // END - Fetch the all coopSociety functionality
   return (
     <>
@@ -265,23 +282,25 @@ export default function Agency() {
                   </div>
                 </div>
                 {/* ---------- START Filter Dropdown ----------  */}
-                <div className="col-md-3 my-3">
-                  <label className="form-label">Filter by State</label>
-                  <select
-                    className="form-select  "
-                    id="inputState"
-                    onChange={handleStateChange}
-                    name="state"
-                    // value={formData.state}
-                  >
-                    <option value="">Select State</option>
-                    {Object.keys(stateCity).map((state) => (
-                      <option key={state} value={state}>
-                        {state}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                {stateValue === "" && (
+                  <div className="col-md-3 my-3">
+                    <label className="form-label">Filter by State</label>
+                    <select
+                      className="form-select  "
+                      id="inputState"
+                      onChange={handleStateChange}
+                      name="state"
+                      // value={formData.state}
+                    >
+                      <option value="">Select State</option>
+                      {Object.keys(stateCity).map((state) => (
+                        <option key={state} value={state}>
+                          {state}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
                 {/* ---------- END header ----------  */}
                 <div className="tab-content" id="myTabContent">
                   <div
@@ -374,55 +393,59 @@ export default function Agency() {
                                         : "_"}
                                     </td>
                                     <td>
-                                      <div className="d-flex gap-2">
-                                        <div class="form-check form-switch">
-                                          <input
-                                            class="form-check-input"
-                                            type="checkbox"
-                                            checked={val.status}
-                                            onClick={() => toggleStatus(val.id)}
-                                          />
-                                        </div>
-                                        {val.amount && (
+                                      {stateValue === "" && (
+                                        <div className="d-flex gap-2">
+                                          <div class="form-check form-switch">
+                                            <input
+                                              class="form-check-input"
+                                              type="checkbox"
+                                              checked={val.status}
+                                              onClick={() =>
+                                                toggleStatus(val.id)
+                                              }
+                                            />
+                                          </div>
+                                          {val.amount && (
+                                            <button
+                                              type="button"
+                                              className="btn btn-link p-0"
+                                              onClick={() => {
+                                                handlePdfDownload(val);
+                                              }}
+                                            >
+                                              <i
+                                                className="bi bi-download"
+                                                style={{ cursor: "pointer" }}
+                                              ></i>
+                                            </button>
+                                          )}
                                           <button
                                             type="button"
                                             className="btn btn-link p-0"
-                                            onClick={() => {
-                                              handlePdfDownload(val);
-                                            }}
+                                            onClick={() =>
+                                              editAgencyPage(val?.id)
+                                            }
                                           >
                                             <i
-                                              className="bi bi-download"
+                                              className="bi bi-pencil "
                                               style={{ cursor: "pointer" }}
                                             ></i>
                                           </button>
-                                        )}
-                                        <button
-                                          type="button"
-                                          className="btn btn-link p-0"
-                                          onClick={() =>
-                                            editAgencyPage(val?.id)
-                                          }
-                                        >
-                                          <i
-                                            className="bi bi-pencil "
-                                            style={{ cursor: "pointer" }}
-                                          ></i>
-                                        </button>
-                                        <button
-                                          type="button"
-                                          className="btn btn-link p-0"
-                                          data-bs-toggle="modal"
-                                          data-bs-target={
-                                            "#deleteUser" + val?.id
-                                          }
-                                        >
-                                          <i
-                                            className="bi bi-trash text-danger"
-                                            style={{ cursor: "pointer" }}
-                                          ></i>
-                                        </button>
-                                      </div>
+                                          <button
+                                            type="button"
+                                            className="btn btn-link p-0"
+                                            data-bs-toggle="modal"
+                                            data-bs-target={
+                                              "#deleteUser" + val?.id
+                                            }
+                                          >
+                                            <i
+                                              className="bi bi-trash text-danger"
+                                              style={{ cursor: "pointer" }}
+                                            ></i>
+                                          </button>
+                                        </div>
+                                      )}
                                       <div
                                         className="modal fade"
                                         id={"deleteUser" + val?.id}

@@ -25,6 +25,8 @@ export default function Sidebar() {
         const coopSocietyLogin =
           JSON.parse(localStorage.getItem("CoopSocietyLogin")) || {};
         const adminLogin = JSON.parse(localStorage.getItem("AdminLogin")) || {};
+        const stateWiseLogin =
+          JSON.parse(localStorage.getItem("StateWiseLogin")) || {};
 
         // Check if either volunteerLogin or coopSocietyLogin is valid and contains the 'token' property
         if (volunteerLogin.token) {
@@ -33,6 +35,8 @@ export default function Sidebar() {
           setItem(coopSocietyLogin);
         } else if (adminLogin.token) {
           setItem(adminLogin);
+        } else if (stateWiseLogin.token) {
+          setItem(stateWiseLogin);
         }
       } else {
         console.error("localStorage is not available.");
@@ -40,7 +44,6 @@ export default function Sidebar() {
     }
   }, []);
 
-console.log("sidebarActive",sidebarActive);
 
   return (
     <>
@@ -210,6 +213,45 @@ console.log("sidebarActive",sidebarActive);
                 >
                   <i class="bi bi-images"></i>
                   <span>Volunteer</span>
+                </Link>
+              </li>
+            </>
+          ) : item && item?.data?.role_id == 6 ? (
+            <>
+              <li className="nav-item">
+                <Link
+                  className={
+                    sidebarActive == "2" ? "nav-link active" : "nav-link"
+                  }
+                  href="/user/adduser"
+                  onClick={() => handleSideMenu(2)}
+                >
+                  <i class="bi bi-people-fill"></i>
+                  <span>Add Member</span>
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className={
+                    sidebarActive == "3" ? "nav-link active" : "nav-link"
+                  }
+                  href="/user"
+                  onClick={() => handleSideMenu(3)}
+                >
+                  <i class="bi bi-person-lines-fill"></i>
+                  <span>Manage Members</span>
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className={
+                    sidebarActive == "7" ? "nav-link active" : "nav-link"
+                  }
+                  href="/coopSociety"
+                  onClick={() => handleSideMenu(7)}
+                >
+                  <i class="bi bi-houses"></i>
+                  <span>Cooperative Society</span>
                 </Link>
               </li>
             </>
