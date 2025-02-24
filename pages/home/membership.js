@@ -906,7 +906,7 @@ export default function membership() {
                             ""
                           )}
                           <p className="memberShipFee">
-                            Life Menbership Fee Rs <span>5000 /-</span>
+                            Life Membership Fee Rs <span>5000 /-</span>
                           </p>
                           <div class="col-xl-12 col-lg-12 col-md-12">
                             <div class="input-box trmNdcndField">

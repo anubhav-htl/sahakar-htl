@@ -18,7 +18,7 @@ import "jspdf-autotable";
 import html2canvas from "html2canvas";
 import axios from "axios";
 import AddVolunterpdf from "../../component/addvolunteerpdfdata";
-export default function AddAgency() {
+export default function AddAgency({ isAdmin }) {
   const [membershipModalShow, setMembershipModalShow] = useState(false);
   const [cooperativePaidList, setCooperativePaidList] = useState([]);
   const [typeOfCooperative, setTypeOfCooperative] = useState([]);
@@ -215,10 +215,6 @@ export default function AddAgency() {
       setCooperativeMembershipSelectedName(SelectPrice.plan_name);
     }
   };
-  console.log(
-    "cooperativeMembershipSelectedName",
-    cooperativeMembershipSelectedName
-  );
 
   const handleNext = (e) => {
     e.preventDefault();
@@ -228,7 +224,8 @@ export default function AddAgency() {
 
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     var regPin = /^[1-9]{1}[0-9]{5}$/;
-    var regRegistrationNo = /^[A-Za-z0-9-]+$/;
+    var regRegistrationNo = /^[A-Za-z0-9-/]+$/;
+    // var regRegistrationNo = /^[A-Za-z0-9-]+$/;
     // ^[1-9]{1}[0-9]{2}\s{0,1}[0-9]{3}$
     // var regPin = /^[1-9]{1}[0-9]{2}\\s{0,1}[0-9]{3}$/
     var regpan = /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/;
@@ -432,49 +429,252 @@ export default function AddAgency() {
     });
   }
 
+  // const handleSubmit = async (e) => {
+  //   // setRegSuccessModalShow(true);
+  //   // Form is valid, handle form submission here
+  //   const allRecord = new FormData();
+  //   allRecord.append("name", formData.name);
+  //   allRecord.append("state", formData.state);
+  //   allRecord.append("district", formData.district);
+  //   allRecord.append("typeSociety", formData.typeSociety);
+  //   allRecord.append("registration_number", formData.registration_number);
+  //   allRecord.append("pin_code", formData.pin_code);
+  //   allRecord.append("mobile_no", formData.mobile_no);
+  //   allRecord.append("land_line", formData.land_line);
+  //   allRecord.append("email_address", formData.email_address);
+  //   allRecord.append("website", formData.website);
+  //   allRecord.append(
+  //     "year_incorporation_date",
+  //     formData.year_incorporation_date
+  //   );
+  //   allRecord.append("head_office_address", formData.head_office_address);
+  //   allRecord.append("sector", formData.sector);
+  //   allRecord.append(
+  //     "cooperative_society_area",
+  //     formData.cooperative_society_area
+  //   );
+  //   allRecord.append("other_cooperative", formData.other_cooperative);
+  //   allRecord.append("subSector", formData.subSector);
+  //   allRecord.append("work_area", formData.work_area);
+  //   allRecord.append("activities_of_sgh", formData.activities_of_sgh);
+  //   allRecord.append("number_of_branches", formData.number_of_branches);
+  //   allRecord.append("number_extensions", formData.number_extensions);
+  //   allRecord.append("number_employees", formData.number_employees);
+  //   allRecord.append("annual_turnover", formData.annual_turnover);
+  //   allRecord.append("bussiness_value", formData.bussiness_value);
+  //   allRecord.append("chairman_name", formData.chairman_name);
+  //   allRecord.append("chair_mobile_number", formData.chair_mobile_number);
+  //   allRecord.append("chief_name", formData.chief_name);
+  //   allRecord.append("chief_mobile_number", formData.chief_mobile_number);
+  //   allRecord.append("email_add", formData.email_add);
+  //   allRecord.append("details_sahkar", formData.details_sahkar);
+  //   allRecord.append("member_date", formData.member_date);
+  //   allRecord.append("volunteer_id", volunteer_id);
+  //   allRecord.append("membership_id", membershipIdVal);
+  //   allRecord.append("pan_number", formData.pan_number);
+  //   allRecord.append(
+  //     "payment_plan_id",
+  //     membershipIdVal ? "" : cooperativeMembershipSelectedId
+  //   );
+  //   allRecord.append("society_pan_card", panCardFile);
+  //   allRecord.append("payment_status", "Initialize");
+
+  //   if (membershipQusValue == "no") {
+  //     // payment data start
+  //     const data = await fetch(API_URL + "coopSociety-add", {
+  //       method: "POST",
+  //       headers: {
+  //         Authorization: `Bearer ${adminToken}`,
+  //         Accept: "multipart/form-data",
+  //       },
+  //       body: allRecord,
+  //     });
+  //     const response_data = await data.json();
+
+  //     if (response_data.status == true) {
+  //       setMembershipId(response_data.data.id);
+  //       setCoopCreatedDate(response_data.data.created_at);
+  //       const res = await loadScript(
+  //         "https://checkout.razorpay.com/v1/checkout.js"
+  //       );
+
+  //       if (!res) {
+  //         alert("Razorpay SDK failed to load. Are you online?");
+  //         return;
+  //       }
+
+  //       var options = {
+  //         key: key_id,
+  //         amount: cooperativeMembershipSelectedPrice * 100,
+  //         currency: "INR",
+  //         name: formData.name, //your business name
+  //         description: "Transaction",
+  //         // "image": "https://example.com/your_logo",
+  //         // "order_id": "order_9A33XWu170gUtm", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+  //         handler: async function (response) {
+  //           //   alert(response.razorpay_payment_id);
+  //           setrazorPayID(response?.razorpay_payment_id);
+
+  //           const updateresData = {
+  //             payment_status: response.razorpay_payment_id
+  //               ? "Success"
+  //               : "Failed",
+  //             payment_id: response.razorpay_payment_id,
+  //             amount: cooperativeMembershipSelectedPrice,
+  //             memberShipCategory: cooperativeMembershipSelectedName,
+  //           };
+  //           // allRecord.append("payment_id", response.razorpay_payment_id);
+  //           // allRecord.append(
+  //           //   "payment_status",
+  //           //   response.razorpay_payment_id ? "Success" : "Failed"
+  //           // );
+  //           if (response.razorpay_payment_id) {
+  //             const updateData = await fetch(
+  //               `${API_URL}update-coop-membership/${response_data.data.id}`,
+  //               {
+  //                 method: "POST",
+  //                 headers: {
+  //                   Authorization: `Bearer ${adminToken}`,
+  //                   // Accept: "multipart/form-data",
+  //                   "Content-Type": "application/json",
+  //                 },
+  //                 body: JSON.stringify(updateresData),
+  //               }
+  //             );
+  //             const responseUp_data = await updateData.json();
+
+  //             if (responseUp_data.status == true) {
+  //               setRegSuccessModalShow(true);
+  //               if (membershipQusValue == "yes") {
+  //                 setStep(4);
+  //               }
+
+  //               setIsLoading(false);
+  //               setcheckTndC(false);
+  //               setMembershipIdVal("");
+  //               // toast.success(responseUp_data.message);
+  //               handleMembershipModalClose();
+  //             } else {
+  //               setIsLoading(false);
+  //               setcheckTndC(false);
+  //               toast.error(responseUp_data.message);
+  //               setStep(1);
+  //               setMembershipIdVal("");
+  //             }
+  //           } else {
+  //             toast.error("Co-Operative not created");
+  //             handleMembershipModalClose();
+  //             setStep(1);
+  //           }
+  //           // alert(response.razorpay_order_id);
+  //           // alert(response.razorpay_signature)
+  //         },
+  //         prefill: {
+  //           //We recommend using the prefill parameter to auto-fill customer's contact information, especially their phone number
+  //           name: formData.name, //your customer's name
+  //           email: formData.email_address,
+  //           contact: formData.mobile_no, //Provide the customer's phone number for better conversion rates
+  //         },
+  //         notes: {
+  //           address: "Razorpay Corporate Office",
+  //         },
+  //         theme: {
+  //           color: "#3399cc",
+  //         },
+  //       };
+
+  //       var rzp1 = new Razorpay(options);
+  //       rzp1.on("payment.failed", function (response) {
+  //         // alert(response.error.code);
+  //         // alert(response.error.description);
+  //         // alert(response.error.source);
+  //         // alert(response.error.step);
+  //         // alert(response.error.reason);
+  //         // alert(response.error.metadata.order_id);
+  //         // alert(response.error.metadata.payment_id);
+  //       });
+  //       const paymentObject = new window.Razorpay(options);
+  //       paymentObject.open();
+  //     } else {
+  //       toast.warning(response_data.message);
+  //     }
+  //     //payment data end
+  //   } else {
+  //     const data = await fetch(API_URL + "coopSociety-add", {
+  //       method: "POST",
+  //       headers: {
+  //         Authorization: `Bearer ${adminToken}`,
+  //         Accept: "multipart/form-data",
+  //       },
+  //       body: allRecord,
+  //     });
+  //     const response_data = await data.json();
+  //     if (response_data.status == true) {
+  //       setStep(4);
+  //       setIsLoading(false);
+  //       setcheckTndC(false);
+  //       setMembershipIdVal("");
+  //       toast.success(response_data.message);
+  //       handleMembershipModalClose();
+  //     } else {
+  //       setcheckTndC(false);
+  //       setIsLoading(false);
+  //       setMembershipIdVal("");
+  //       toast.error(response_data.message);
+  //       setStep(1);
+  //       handleMembershipModalClose();
+  //     }
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
-    // setRegSuccessModalShow(true);
-    // Form is valid, handle form submission here
     const allRecord = new FormData();
-    allRecord.append("name", formData.name);
-    allRecord.append("state", formData.state);
-    allRecord.append("district", formData.district);
-    allRecord.append("typeSociety", formData.typeSociety);
-    allRecord.append("registration_number", formData.registration_number);
-    allRecord.append("pin_code", formData.pin_code);
-    allRecord.append("mobile_no", formData.mobile_no);
-    allRecord.append("land_line", formData.land_line);
-    allRecord.append("email_address", formData.email_address);
-    allRecord.append("website", formData.website);
-    allRecord.append(
-      "year_incorporation_date",
-      formData.year_incorporation_date
-    );
-    allRecord.append("head_office_address", formData.head_office_address);
-    allRecord.append("sector", formData.sector);
-    allRecord.append(
-      "cooperative_society_area",
-      formData.cooperative_society_area
-    );
-    allRecord.append("other_cooperative", formData.other_cooperative);
-    allRecord.append("subSector", formData.subSector);
-    allRecord.append("work_area", formData.work_area);
-    allRecord.append("activities_of_sgh", formData.activities_of_sgh);
-    allRecord.append("number_of_branches", formData.number_of_branches);
-    allRecord.append("number_extensions", formData.number_extensions);
-    allRecord.append("number_employees", formData.number_employees);
-    allRecord.append("annual_turnover", formData.annual_turnover);
-    allRecord.append("bussiness_value", formData.bussiness_value);
-    allRecord.append("chairman_name", formData.chairman_name);
-    allRecord.append("chair_mobile_number", formData.chair_mobile_number);
-    allRecord.append("chief_name", formData.chief_name);
-    allRecord.append("chief_mobile_number", formData.chief_mobile_number);
-    allRecord.append("email_add", formData.email_add);
-    allRecord.append("details_sahkar", formData.details_sahkar);
-    allRecord.append("member_date", formData.member_date);
+
+    // Define a mapping of formData keys to FormData keys
+    const formDataMapping = {
+      name: "name",
+      state: "state",
+      district: "district",
+      typeSociety: "typeSociety",
+      registration_number: "registration_number",
+      pin_code: "pin_code",
+      mobile_no: "mobile_no",
+      land_line: "land_line",
+      email_address: "email_address",
+      website: "website",
+      year_incorporation_date: "year_incorporation_date",
+      head_office_address: "head_office_address",
+      sector: "sector",
+      cooperative_society_area: "cooperative_society_area",
+      other_cooperative: "other_cooperative",
+      subSector: "subSector",
+      work_area: "work_area",
+      activities_of_sgh: "activities_of_sgh",
+      number_of_branches: "number_of_branches",
+      number_extensions: "number_extensions",
+      number_employees: "number_employees",
+      annual_turnover: "annual_turnover",
+      bussiness_value: "bussiness_value",
+      chairman_name: "chairman_name",
+      chair_mobile_number: "chair_mobile_number",
+      chief_name: "chief_name",
+      chief_mobile_number: "chief_mobile_number",
+      email_add: "email_add",
+      details_sahkar: "details_sahkar",
+      member_date: "member_date",
+      pan_number: "pan_number",
+    };
+
+    // Append formData properties dynamically
+    for (const key in formDataMapping) {
+      if (formData[key] !== undefined) {
+        allRecord.append(formDataMapping[key], formData[key]);
+      }
+    }
+
+    // Append additional fields
     allRecord.append("volunteer_id", volunteer_id);
     allRecord.append("membership_id", membershipIdVal);
-    allRecord.append("pan_number", formData.pan_number);
     allRecord.append(
       "payment_plan_id",
       membershipIdVal ? "" : cooperativeMembershipSelectedId
@@ -482,151 +682,115 @@ export default function AddAgency() {
     allRecord.append("society_pan_card", panCardFile);
     allRecord.append("payment_status", "Initialize");
 
-    if (membershipQusValue == "no") {
-      // payment data start
+    const submitData = async () => {
       const data = await fetch(API_URL + "coopSociety-add", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${adminToken}`,
-          Accept: "multipart/form-data",
         },
         body: allRecord,
       });
-      const response_data = await data.json();
+      return await data.json();
+    };
 
-      if (response_data.status == true) {
+    const handlePayment = async (response_data) => {
+      const res = await loadScript(
+        "https://checkout.razorpay.com/v1/checkout.js"
+      );
+      if (!res) {
+        toast.warn("Razorpay SDK failed to load. Are you online?");
+        return;
+      }
+
+      const options = {
+        key: key_id,
+        amount: cooperativeMembershipSelectedPrice * 100,
+        currency: "INR",
+        name: formData.name,
+        description: "Transaction",
+        handler: async function (response) {
+          setrazorPayID(response?.razorpay_payment_id);
+
+          const updateresData = {
+            payment_status: response.razorpay_payment_id ? "Success" : "Failed",
+            payment_id: response.razorpay_payment_id,
+            amount: cooperativeMembershipSelectedPrice,
+            memberShipCategory: cooperativeMembershipSelectedName,
+          };
+
+          if (response.razorpay_payment_id) {
+            await updatePaymentStatus(response_data.data.id, updateresData);
+            toast.success("Payment successful!");
+            const redirect = isAdmin ? "/coopSociety" : "/";
+            router.push(redirect);
+          } else {
+            toast.error("Co-Operative not created");
+            handleMembershipModalClose();
+            setStep(1);
+          }
+        },
+        prefill: {
+          name: formData.name,
+          email: formData.email_address,
+          contact: formData.mobile_no,
+        },
+        theme: {
+          color: "#3399cc",
+        },
+      };
+
+      const paymentObject = new window.Razorpay(options);
+      paymentObject.on("payment.failed", function (response) {
+        console.error("Payment failed:", response.error);
+      });
+      paymentObject.open();
+    };
+
+    const updatePaymentStatus = async (id, updateresData) => {
+      const updateData = await fetch(`${API_URL}update-coop-membership/${id}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updateresData),
+      });
+      const responseUp_data = await updateData.json();
+
+      if (responseUp_data.status) {
+        setRegSuccessModalShow(true);
+        setStep(membershipQusValue === "yes" ? 4 : 1);
+        setIsLoading(false);
+        setcheckTndC(false);
+        setMembershipIdVal("");
+        handleMembershipModalClose();
+      } else {
+        toast.error(responseUp_data.message);
+        setStep(1);
+        setMembershipIdVal("");
+      }
+    };
+
+    const response_data = await submitData();
+
+    if (response_data.status) {
+      if (membershipQusValue === "no") {
         setMembershipId(response_data.data.id);
         setCoopCreatedDate(response_data.data.created_at);
-        const res = await loadScript(
-          "https://checkout.razorpay.com/v1/checkout.js"
-        );
-
-        if (!res) {
-          alert("Razorpay SDK failed to load. Are you online?");
-          return;
-        }
-
-        var options = {
-          key: key_id,
-          amount: cooperativeMembershipSelectedPrice * 100,
-          currency: "INR",
-          name: formData.name, //your business name
-          description: "Transaction",
-          // "image": "https://example.com/your_logo",
-          // "order_id": "order_9A33XWu170gUtm", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-          handler: async function (response) {
-            //   alert(response.razorpay_payment_id);
-            setrazorPayID(response?.razorpay_payment_id);
-
-            const updateresData = {
-              payment_status: response.razorpay_payment_id
-                ? "Success"
-                : "Failed",
-              payment_id: response.razorpay_payment_id,
-              amount: cooperativeMembershipSelectedPrice,
-              memberShipCategory: cooperativeMembershipSelectedName,
-            };
-            // allRecord.append("payment_id", response.razorpay_payment_id);
-            // allRecord.append(
-            //   "payment_status",
-            //   response.razorpay_payment_id ? "Success" : "Failed"
-            // );
-            if (response.razorpay_payment_id) {
-              const updateData = await fetch(
-                `${API_URL}update-coop-membership/${response_data.data.id}`,
-                {
-                  method: "POST",
-                  headers: {
-                    Authorization: `Bearer ${adminToken}`,
-                    // Accept: "multipart/form-data",
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify(updateresData),
-                }
-              );
-              const responseUp_data = await updateData.json();
-
-              if (responseUp_data.status == true) {
-                setRegSuccessModalShow(true);
-                if (membershipQusValue == "yes") {
-                  setStep(4);
-                }
-
-                setIsLoading(false);
-                setcheckTndC(false);
-                setMembershipIdVal("");
-                // toast.success(responseUp_data.message);
-                handleMembershipModalClose();
-              } else {
-                setIsLoading(false);
-                setcheckTndC(false);
-                toast.error(responseUp_data.message);
-                setStep(1);
-                setMembershipIdVal("");
-              }
-            } else {
-              toast.error("Co-Operative not created");
-              handleMembershipModalClose();
-              setStep(1);
-            }
-            // alert(response.razorpay_order_id);
-            // alert(response.razorpay_signature)
-          },
-          prefill: {
-            //We recommend using the prefill parameter to auto-fill customer's contact information, especially their phone number
-            name: formData.name, //your customer's name
-            email: formData.email_address,
-            contact: formData.mobile_no, //Provide the customer's phone number for better conversion rates
-          },
-          notes: {
-            address: "Razorpay Corporate Office",
-          },
-          theme: {
-            color: "#3399cc",
-          },
-        };
-        var rzp1 = new Razorpay(options);
-        rzp1.on("payment.failed", function (response) {
-          // alert(response.error.code);
-          // alert(response.error.description);
-          // alert(response.error.source);
-          // alert(response.error.step);
-          // alert(response.error.reason);
-          // alert(response.error.metadata.order_id);
-          // alert(response.error.metadata.payment_id);
-        });
-        const paymentObject = new window.Razorpay(options);
-        paymentObject.open();
+        await handlePayment(response_data);
       } else {
-        toast.warning(response_data.message);
-      }
-      //payment data end
-    } else {
-      const data = await fetch(API_URL + "coopSociety-add", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${adminToken}`,
-          Accept: "multipart/form-data",
-        },
-        body: allRecord,
-      });
-      const response_data = await data.json();
-      if (response_data.status == true) {
         setStep(4);
-        setIsLoading(false);
-        setcheckTndC(false);
-        setMembershipIdVal("");
-        toast.success(response_data.message);
+        toast.success("CoopSociety added successfully");
         handleMembershipModalClose();
-      } else {
-        setcheckTndC(false);
-        setIsLoading(false);
-        setMembershipIdVal("");
-        toast.error(response_data.message);
-        setStep(1);
-        handleMembershipModalClose();
+        const redirect = isAdmin ? "/coopSociety" : "/";
+        router.push(redirect);
       }
+    } else {
+      toast.warning("Error while adding CoopSociety !");
     }
+
+    setIsLoading(false);
+    setcheckTndC(false);
   };
 
   const handleChangeyearInDate = (name, value) => {
@@ -670,36 +834,46 @@ export default function AddAgency() {
   //pdf generate end
   return (
     <section className="sahkar society-step-form">
-      <div class="main-header-one__top mb-4">
-        <div class="container">
-          <div class="logo-box-one">
-            <a href="/">
-              <img
-                src="/img/sahakar-bharati-logo.jpg"
-                alt="Awesome Logo"
-                title=""
-              />
-            </a>
+      {!isAdmin && (
+        <div class="main-header-one__top mb-4">
+          <div class="container">
+            <div class="logo-box-one">
+              <a href="/">
+                <img
+                  src="/img/sahakar-bharati-logo.jpg"
+                  alt="Awesome Logo"
+                  title=""
+                />
+              </a>
+            </div>
           </div>
         </div>
-      </div>
+      )}
       <div className="container sahkar_bharti">
         <div className="row d-flex align-items-center justify-content-between top-field">
           <div className="col-md-6">
             <h4 className="card-title">
-              {/* <Link href="/" style={{ cursor: "pointer" }}>
-                <i className="bi bi-arrow-left pe-2"></i>
-              </Link> */}
+              {isAdmin && (
+                <Link href="/coopSociety" style={{ cursor: "pointer" }}>
+                  <i className="bi bi-arrow-left pe-2"></i>
+                </Link>
+              )}
               Add Cooperative Society
             </h4>
           </div>
-          <div className="col-md-6">
-            <h4 className="card-title text-end">
-              <Link href="/" style={{ cursor: "pointer" }} className="goTohome">
-                Go to Home
-              </Link>
-            </h4>
-          </div>
+          {!isAdmin && (
+            <div className="col-md-6">
+              <h4 className="card-title text-end">
+                <Link
+                  href="/"
+                  style={{ cursor: "pointer" }}
+                  className="goTohome"
+                >
+                  Go to Home
+                </Link>
+              </h4>
+            </div>
+          )}
         </div>
         <form id="msform">
           <ul id="progressbar">
@@ -1048,11 +1222,15 @@ export default function AddAgency() {
                   <label className="form-label">
                     {formData.typeSociety !== "SHG - Self Help Group" &&
                     formData.typeSociety !== "JLG"
-                      ? "Year of Incorporation"
+                      ? "Date of Incorporation"
                       : "Date of formation"}{" "}
                     <span style={{ color: "red" }}>*</span>
                   </label>
                   <DatePicker
+                    peekNextMonth
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
                     selected={yearIncop}
                     name="year_incorporation_date"
                     style="width:100%"
