@@ -44,7 +44,6 @@ export default function Sidebar() {
     }
   }, []);
 
-
   return (
     <>
       {/* /<!-- ======= Sidebar ======= --> */}
@@ -173,6 +172,30 @@ export default function Sidebar() {
                   {/* <i class="bi bi-people"></i> */}
                   <i class="bi bi-person-vcard"></i>
                   <span>Volunteer</span>
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className={
+                    sidebarActive == "10" ? "nav-link active" : "nav-link"
+                  }
+                  href="/state-wise-user"
+                  onClick={() => handleSideMenu(10)}
+                >
+                  <i class="bi bi-person-add"></i>
+                  <span>Add State-wise User</span>
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className={
+                    sidebarActive == "11" ? "nav-link active" : "nav-link"
+                  }
+                  href="/state-wise-user/listing"
+                  onClick={() => handleSideMenu(11)}
+                >
+                  <i class="bi bi-person-badge-fill"></i>
+                  <span>State-wise User</span>
                 </Link>
               </li>
               <li className="nav-item">

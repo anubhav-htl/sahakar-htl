@@ -106,12 +106,12 @@ const RegistrationForm = () => {
 
   return (
     <Layout>
-      <div className="container mt-5">
-        <div className="row justify-content-center">
+
+        <div className="row justify-content-center mt-5">
           <div className="col-md-8">
             <div className="card">
               <div className="card-body">
-                <h2 className="card-title text-center">Registration Form</h2>
+                <h2 className="card-title text-center">Add State-wise user</h2>
                 {apiError && (
                   <div className="alert alert-danger">{apiError}</div>
                 )}
@@ -336,7 +336,7 @@ const RegistrationForm = () => {
               </div>
             </div>
           </div>
-        </div>
+   
       </div>
     </Layout>
   );
