@@ -55,7 +55,7 @@ export default function Navbar() {
             className="logo d-flex align-items-center justify-content-center"
             style={{ backgroundColor: "#fff !important" }}
           >
-            <span class="d-none d-lg-block">Sahkar</span>
+            <span className="d-none d-lg-block">Sahkar</span>
           </Link>
         </div>
         {/* <!-- End Logo --> */}

@@ -827,7 +827,7 @@ export default function membershipPayment() {
                 }}
               >
                 <img
-                  src="/img/sahakar-bharati-logo-pdf.jpg"
+                  src="/img/sahakar-bharati-logo-pdf.png"
                   alt="Awesome Logo"
                   title=""
                 />

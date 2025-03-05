@@ -9,7 +9,7 @@ export default function Header() {
             <div class="logo-box-one">
               <a href="/">
                 <img
-                  src="/img/sahakar-bharati-logo.jpg"
+                  src="/img/sahakar-bharati-logo.png"
                   alt="Awesome Logo"
                   title=""
                 />

@@ -17,7 +17,6 @@ import axios from "axios";
 export default function AddUser() {
   const [inputValue, setInputValue] = useState({
     gender: "male",
-
     role_id: "1",
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -32,9 +31,9 @@ export default function AddUser() {
     setErrors([]);
     setInputValue({
       gender: "male",
-
       role_id: "1",
     });
+    setrazorPayID("");
     // setTimeout(() => router.push("/"), 4000);
     router.push("/");
   };
@@ -68,16 +67,106 @@ export default function AddUser() {
       document.body.appendChild(script);
     });
   }
+  // const SubmitAddUser = async (e) => {
+  //   e.preventDefault();
+  //   setIsLoading(true);
+  //   const validationErrors = isValid();
+  //   if (validationErrors && Object.keys(validationErrors).length === 0) {
+  //   } else {
+  //     setErrors(validationErrors);
+  //     setIsLoading(false);
+  //     return false;
+  //   }
+  //   const { id, price } = JSON.parse(inputValue.event_id);
+  //   const dataValue = {
+  //     gender: inputValue.gender,
+  //     role_id: "1",
+  //     first_name: inputValue.first_name,
+  //     last_name: inputValue.last_name,
+  //     email: inputValue.email,
+  //     contact_number: inputValue.contact_number,
+  //     state: inputValue.state,
+  //     event_id: id,
+  //     city: inputValue.city,
+  //     designation: inputValue.degination1 + "-" + inputValue.degination2,
+  //     payment_status: price != 0 ? "pending" : "Free",
+  //   };
+
+  //   const response = await fetch(API_URL + "no-login-insert-user-backend", {
+  //     method: "POST", // or 'PUT'
+  //     headers: {
+  //       // Authorization: `Bearer ${adminToken}`,
+  //       // "Content-Type": "multipart/form-data",
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify(dataValue),
+  //   });
+  //   const user_details = await response.json();
+
+  //   if (user_details.status === true && price != 0) {
+  //     setIsLoading(false);
+  //     setErrors([]);
+  //     // razor payment start
+  //     const res = await loadScript(
+  //       "https://checkout.razorpay.com/v1/checkout.js"
+  //     );
+
+  //     if (!res) {
+  //       alert("Razorpay SDK failed to load. Are you online?");
+  //       return;
+  //     }
+
+  //     var options = {
+  //       key: key_id,
+  //       key_secret: secret_key_id,
+  //       amount: price * 100,
+  //       // amount: "30000",
+  //       currency: "INR",
+  //       name: inputValue.first_name,
+  //       description: "Application For User",
+  //       handler: async function (response) {
+  //         const rezorPayId = response.razorpay_payment_id;
+  //         setrazorPayID(response?.razorpay_payment_id);
+
+  //         if (rezorPayId) {
+  //           toast.success("User Added Successfully!");
+  //           setRegSuccessModalShow(true);
+
+  //           setTimeout(() => setIsLoading(false), 5000);
+  //         }
+  //       },
+
+  //       theme: {
+  //         color: "#3399cc",
+  //       },
+  //     };
+  //     var rzp1 = new Razorpay(options);
+
+  //     rzp1.on("payment.failed", function (response) {});
+  //     const paymentObject = new window.Razorpay(options);
+  //     paymentObject.open();
+  //     // razor payment end
+  //   } else {
+  //     console.log("error===================>", user_details);
+  //     setIsLoading(false);
+  //     setRegSuccessModalShow(true);
+
+  //     toast.error(user_details.message);
+  //     // toast.error("Email or Contact Number Already Exists");
+  //   }
+  // };
+
   const SubmitAddUser = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+
     const validationErrors = isValid();
-    if (validationErrors && Object.keys(validationErrors).length === 0) {
-    } else {
+    if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       setIsLoading(false);
-      return false;
+      return;
     }
+
     const { id, price } = JSON.parse(inputValue.event_id);
     const dataValue = {
       gender: inputValue.gender,
@@ -89,71 +178,125 @@ export default function AddUser() {
       state: inputValue.state,
       event_id: id,
       city: inputValue.city,
-      designation: inputValue.degination1 + "-" + inputValue.degination2,
-      payment_status: price != 0 ? "pending" : "Free",
+      designation: `${inputValue.degination1} - ${inputValue.degination2}`,
+      payment_status: price !== 0 ? "pending" : "Success",
+      event_fees: price !== 0 ? price : 0.0,
     };
 
-    const response = await fetch(API_URL + "no-login-insert-user-backend", {
-      method: "POST", // or 'PUT'
-      headers: {
-        // Authorization: `Bearer ${adminToken}`,
-        // "Content-Type": "multipart/form-data",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(dataValue),
-    });
-    const user_details = await response.json();
+    try {
+      const response = await fetch(API_URL + "no-login-insert-user-backend", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataValue),
+      });
 
-    if (user_details.status === true && price != 0) {
+      const userDetails = await response.json();
+      if (userDetails.status) {
+        if (userDetails.status && price !== 0) {
+          await handleRazorpayPayment(
+            price,
+            inputValue.first_name,
+            id,
+            inputValue.email
+          );
+        } else {
+          handleRegistrationSuccess(userDetails.message);
+        }
+      }else{
+        toast.error(userDetails.message);
+      }
+    } catch (error) {
+      console.error("Error submitting user:", error);
+      toast.error("An error occurred while adding the user.");
+    } finally {
       setIsLoading(false);
-      setErrors([]);
-      // razor payment start
-      const res = await loadScript(
-        "https://checkout.razorpay.com/v1/checkout.js"
-      );
+    }
+  };
 
-      if (!res) {
-        alert("Razorpay SDK failed to load. Are you online?");
-        return;
+  const handleRazorpayPayment = async (price, firstName, eventId, email) => {
+    const res = await loadScript(
+      "https://checkout.razorpay.com/v1/checkout.js"
+    );
+
+    if (!res) {
+      alert("Razorpay SDK failed to load. Are you online?");
+      return;
+    }
+
+    const options = {
+      key: key_id,
+      amount: price * 100,
+      currency: "INR",
+      name: firstName,
+      description: "Application For User",
+      handler: async function (response) {
+        const rezorPayId = response.razorpay_payment_id;
+        if (rezorPayId) {
+          toast.success("User Added Successfully!");
+          setrazorPayID(rezorPayId);
+          setRegSuccessModalShow(true);
+
+          // Call the API to update payment details
+          await updateJoinEventUserpaymentAPI(
+            eventId,
+            email,
+            rezorPayId,
+            price,
+            "success"
+          );
+
+          setTimeout(() => setIsLoading(false), 5000);
+        }
+      },
+      theme: {
+        color: "#3399cc",
+      },
+    };
+
+    const paymentObject = new window.Razorpay(options);
+    paymentObject.on("payment.failed", () => {});
+    paymentObject.open();
+  };
+
+  const updateJoinEventUserpaymentAPI = async (
+    event_id,
+    email,
+    transaction_id,
+    event_fees,
+    payment_status
+  ) => {
+    try {
+      const response = await fetch(API_URL + "update-join-event-userpayment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          event_id,
+          email,
+          transaction_id,
+          event_fees,
+          payment_status,
+        }),
+      });
+
+      const result = await response.json();
+      if (!result.status) {
+        throw new Error(result.message || "Failed to update payment details.");
       }
 
-      var options = {
-        key: key_id,
-        key_secret: secret_key_id,
-        amount: price * 100,
-        // amount: "30000",
-        currency: "INR",
-        name: inputValue.first_name,
-        description: "Application For User",
-        handler: async function (response) {
-          const rezorPayId = response.razorpay_payment_id;
-          setrazorPayID(response?.razorpay_payment_id);
-
-          if (rezorPayId) {
-            toast.success("User Added Successfully!");
-            setRegSuccessModalShow(true);
-
-            setTimeout(() => setIsLoading(false), 5000);
-          }
-        },
-
-        theme: {
-          color: "#3399cc",
-        },
-      };
-      var rzp1 = new Razorpay(options);
-
-      rzp1.on("payment.failed", function (response) {});
-      const paymentObject = new window.Razorpay(options);
-      paymentObject.open();
-      // razor payment end
-    } else {
-      setIsLoading(false);
-      setRegSuccessModalShow(true);
-
-      toast.error(user_details.message);
-      // toast.error("Email or Contact Number Already Exists");
+      console.log("Payment details updated successfully:", result);
+    } catch (error) {
+      console.error("Error updating payment details:", error);
+      toast.error("Failed to update payment details.");
     }
+  };
+
+  const handleRegistrationSuccess = (message) => {
+    setRegSuccessModalShow(true);
+    toast.error(message || "Email or Contact Number Already Exists");
   };
 
   const isValid = () => {
@@ -278,7 +421,7 @@ export default function AddUser() {
           <div class="logo-box-one">
             <a href="/">
               <img
-                src="/img/sahakar-bharati-logo.jpg"
+                src="/img/sahakar-bharati-logo.png"
                 alt="Awesome Logo"
                 title=""
               />

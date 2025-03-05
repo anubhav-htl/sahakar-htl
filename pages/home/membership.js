@@ -39,6 +39,7 @@ export default function membership() {
       name: "",
       address: "",
       mobileNumber: "",
+      member_email: "",
       aadharNumber: "",
       panNumber: "",
       city: "",
@@ -60,6 +61,7 @@ export default function membership() {
     name: "",
     address: "",
     mobileNumber: "",
+    member_email: "",
     aadharNumber: "",
     panNumber: "",
     city: "",
@@ -108,68 +110,137 @@ export default function membership() {
     setPanFile(e.target.files[0]);
   };
 
+  // const validateForm = () => {
+  //   let valid = true;
+  //   const newErrors = {};
+  //   var regpan = /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/;
+  //   var regAdhar = /^([2-9]{1}[0-9]{3}\s[0-9]{4}\s[0-9]{4}$)/;
+  //   var regexpSpace = /\s/g;
+  //   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  //   // Space check first
+  //   if (
+  //     memberDate.aadharNumber.length > 0 &&
+  //     !regAdhar.test(memberDate.aadharNumber)
+  //   ) {
+  //     newErrors.aadharNumber = "Please enter valid aadhaar number.";
+  //     valid = false;
+  //   }
+  //   if (
+  //     memberDate.panNumber.length > 0 &&
+  //     memberDate.panNumber.charAt(0) === " "
+  //   ) {
+  //     newErrors.panNumber = "First character cannot be a blank space.";
+  //     valid = false;
+  //   } else if (
+  //     memberDate.panNumber.length > 0 &&
+  //     regexpSpace.test(memberDate.panNumber)
+  //   ) {
+  //     newErrors.panNumber = "Space not allowed.";
+  //     valid = false;
+  //   } else if (
+  //     memberDate.panNumber.length > 0 &&
+  //     !regpan.test(memberDate.panNumber)
+  //   ) {
+  //     newErrors.panNumber = "Please enter valid pan card number.";
+  //     valid = false;
+  //   }
+  //   if (memberDate.dob === "") {
+  //     newErrors.dob = "Date of Birth is required";
+  //     valid = false;
+  //   }
+  //   // if (gender == "") {
+  //   //   newErrors.gender = "Gender is required";
+  //   //   valid = false;
+  //   // }
+  //   if (memberDate.name === "") {
+  //     newErrors.name = "Name is required";
+  //     valid = false;
+  //   }
+  //   if (memberDate?.mobileNumber === "") {
+  //     newErrors.mobileNumber = "Mobile number is required";
+  //     valid = false;
+  //   } else if (memberDate?.mobileNumber.length !== 10) {
+  //     newErrors.mobileNumber = "Mobile number should be 10 digits only";
+  //     valid = false;
+  //   }
+  //   if (memberDate?.member_email === "") {
+  //     newErrors.member_email = "Email is required";
+  //     valid = false;
+  //   } else if (emailRegex.test(memberDate?.member_email)) {
+  //     newErrors.member_email = "email is not valid";
+  //     valid = false;
+  //   }
+  //   if (memberDate.address === "") {
+  //     newErrors.address = "Address is required";
+  //     valid = false;
+  //   }
+
+  //   setErrors(newErrors);
+  //   return valid;
+  // };
+
   const validateForm = () => {
     let valid = true;
     const newErrors = {};
-    var regpan = /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/;
-    var regAdhar = /^([2-9]{1}[0-9]{3}\s[0-9]{4}\s[0-9]{4}$)/;
-    var regexpSpace = /\s/g;
-
-    // Space check first
-    if (
-      memberDate.aadharNumber.length > 0 &&
-      !regAdhar.test(memberDate.aadharNumber)
-    ) {
-      newErrors.aadharNumber = "Please enter valid aadhaar number.";
+    
+    // Regex patterns
+    const regPan = /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/;  // PAN Card validation
+    const regAadhar = /^([2-9]{1}[0-9]{3}\s[0-9]{4}\s[0-9]{4}$)/; // Aadhaar Validation
+    const regExpSpace = /\s/; // Space check
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; // Email validation
+  
+    // Aadhaar Validation
+    if (memberDate.aadharNumber?.length > 0 && !regAadhar.test(memberDate.aadharNumber)) {
+      newErrors.aadharNumber = "Please enter a valid Aadhaar number.";
       valid = false;
     }
-    if (
-      memberDate.panNumber.length > 0 &&
-      memberDate.panNumber.charAt(0) === " "
-    ) {
-      newErrors.panNumber = "First character cannot be a blank space.";
-      valid = false;
-    } else if (
-      memberDate.panNumber.length > 0 &&
-      regexpSpace.test(memberDate.panNumber)
-    ) {
-      newErrors.panNumber = "Space not allowed.";
-      valid = false;
-    } else if (
-      memberDate.panNumber.length > 0 &&
-      !regpan.test(memberDate.panNumber)
-    ) {
-      newErrors.panNumber = "Please enter valid pan card number.";
-      valid = false;
+  
+    // PAN Card Validation
+    if (memberDate.panNumber?.length > 0) {
+      if (memberDate.panNumber.charAt(0) === " ") {
+        newErrors.panNumber = "First character cannot be a blank space.";
+        valid = false;
+      } else if (regExpSpace.test(memberDate.panNumber)) {
+        newErrors.panNumber = "Space not allowed in PAN number.";
+        valid = false;
+      } else if (!regPan.test(memberDate.panNumber)) {
+        newErrors.panNumber = "Please enter a valid PAN card number.";
+        valid = false;
+      }
     }
-    if (memberDate.dob === "") {
+  
+    // Required field checks
+    if (!memberDate.dob) {
       newErrors.dob = "Date of Birth is required";
       valid = false;
     }
-    // if (gender == "") {
-    //   newErrors.gender = "Gender is required";
-    //   valid = false;
-    // }
-    if (memberDate.name === "") {
+    if (!memberDate.name) {
       newErrors.name = "Name is required";
       valid = false;
     }
-    if (memberDate?.mobileNumber === "") {
+    if (!memberDate.mobileNumber) {
       newErrors.mobileNumber = "Mobile number is required";
       valid = false;
-    } else if (memberDate?.mobileNumber.length !== 10) {
-      newErrors.mobileNumber = "Mobile number should be 10 digits only";
+    } else if (memberDate.mobileNumber.length !== 10 || isNaN(memberDate.mobileNumber)) {
+      newErrors.mobileNumber = "Mobile number must be 10 digits";
       valid = false;
     }
-    if (memberDate.address === "") {
+    if (!memberDate.member_email) {
+      newErrors.member_email = "Email is required";
+      valid = false;
+    } else if (!emailRegex.test(memberDate.member_email)) {
+      newErrors.member_email = "Email is not valid";
+      valid = false;
+    }
+    if (!memberDate.address) {
       newErrors.address = "Address is required";
       valid = false;
     }
-
     setErrors(newErrors);
     return valid;
   };
-
+  console.log("errors===========>",errors);
   function loadScript(src) {
     return new Promise((resolve) => {
       const script = document.createElement("script");
@@ -192,9 +263,10 @@ export default function membership() {
     formdata.append("membership_aadhar_card", aadharFile);
     formdata.append("membership_pan_card", panFile);
     formdata.append("member_name", memberDate.name);
-    formdata.append("member_amount", 500);
+    formdata.append("member_amount", 5000);
     formdata.append("member_address", memberDate.address);
     formdata.append("member_mobile_nunber", memberDate.mobileNumber);
+    formdata.append("member_email", memberDate.member_email);
     formdata.append("member_aadhar_number", memberDate.aadharNumber);
     formdata.append("member_pan_number", memberDate.panNumber);
     formdata.append("member_city", memberDate.city);
@@ -240,8 +312,6 @@ export default function membership() {
           // "image": "https://example.com/your_logo",
           // order_id: "order_9A33XWu170gUtm", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
           handler: async function (response) {
-            
-            
             setrazorPayID(response?.razorpay_payment_id);
             // const upFormData = new FormData();
             // upFormData.append("payment_id", response.razorpay_payment_id);
@@ -314,8 +384,6 @@ export default function membership() {
         //   alert(response.error.code);
         // })
         rzp1.on("payment.failed", function (response) {
-        
-          
           if (response.error) {
             console.log("Error details:", response.error);
             alert("Payment failed: " + response.error.description);
@@ -343,43 +411,43 @@ export default function membership() {
   const handleSinglePdfGenerate = async () => {
     const doc = new jsPDF("p", "mm", "a4"); // A4 size in mm
     const pages = document.querySelector("#my-table");
-  
+
     // Ensure fixed dimensions for the canvas
     pages.style.width = "210mm";
     pages.style.maxWidth = "210mm";
-  
+
     // Use html2canvas to capture the element
     const canvas = await html2canvas(pages, {
       scale: 3, // High resolution
       useCORS: true, // Handle external images
       backgroundColor: "#ffffff", // White background for consistency
     });
-  
+
     // Get image data from canvas
     const imageData = canvas.toDataURL("image/png");
-  
+
     // Calculate dimensions and split content
     const pageHeight = 297; // A4 height in mm
     const imgProps = doc.getImageProperties(imageData);
     const imgWidth = 210; // A4 width in mm
     const imgHeight = (imgProps.height * imgWidth) / imgProps.width; // Scale height proportionally
-  
+
     let heightLeft = imgHeight;
     let position = 0;
-  
+
     while (heightLeft > 0) {
       // Add the image portion to the current page
       doc.addImage(imageData, "PNG", 0, position, imgWidth, imgHeight);
-  
+
       heightLeft -= pageHeight;
       position -= pageHeight;
-  
+
       // If there's content left, add a new page
       if (heightLeft > 0) {
         doc.addPage();
       }
     }
-  
+
     // Save the PDF
     // window.print()
 
@@ -389,65 +457,64 @@ export default function membership() {
   const handleSinglePdfGenerateCOPY = async () => {
     const doc = new jsPDF("p", "mm", "a4"); // A4 size in mm
     const pages = document.querySelector("#my-table");
-  
+
     // Ensure fixed dimensions for the canvas
     pages.style.width = "210mm";
     pages.style.maxWidth = "210mm";
-  
+
     // Use html2canvas to capture the element
     const canvas = await html2canvas(pages, {
       scale: 3, // High resolution
       useCORS: true, // Handle external images
       backgroundColor: "#ffffff", // White background for consistency
     });
-  
+
     // Get image data from canvas
     const imageData = canvas.toDataURL("image/png");
-  
+
     // Calculate dimensions and split content
     const pageHeight = 297; // A4 height in mm
     const imgProps = doc.getImageProperties(imageData);
     const imgWidth = 210; // A4 width in mm
     const imgHeight = (imgProps.height * imgWidth) / imgProps.width; // Scale height proportionally
-  
+
     let heightLeft = imgHeight;
     let position = 0;
-  
+
     while (heightLeft > 0) {
       // Add the image portion to the current page
       doc.addImage(imageData, "PNG", 0, position, imgWidth, imgHeight);
-  
+
       heightLeft -= pageHeight;
       position -= pageHeight;
-  
+
       // If there's content left, add a new page
       if (heightLeft > 0) {
         doc.addPage();
       }
     }
-  
+
     // Save the PDF
     doc.save(`${memberDate.name || "document"}.pdf`);
   };
-  
 
   //pdf generate end
   return (
     <homeLayout>
       {/* <Header /> */}
       <div class="main-header-one__top">
-          <div class="container">
-            <div class="logo-box-one">
-              <a href="/">
-                <img
-                  src="/img/sahakar-bharati-logo.jpg"
-                  alt="Awesome Logo"
-                  title=""
-                />
-              </a>
-            </div>
+        <div class="container">
+          <div class="logo-box-one">
+            <a href="/">
+              <img
+                src="/img/sahakar-bharati-logo.png"
+                alt="Awesome Logo"
+                title=""
+              />
+            </a>
           </div>
         </div>
+      </div>
       <div>
         {/* <section class="page-header">
           <div class="page-header__bg"></div>
@@ -547,8 +614,8 @@ export default function membership() {
                                 class="form-control"
                                 Placeholder="Mobile Number"
                               />
-                              {errors?.mobileNumber &&
-                              memberDate.mobileNumber == "" ? (
+                              {errors?.mobileNumber ?
+                             (
                                 <small className="errormsg">
                                   {errors?.mobileNumber}
                                 </small>
@@ -558,18 +625,27 @@ export default function membership() {
                             </div>
                           </div>
                           <div class="col-xl-4 col-lg-4 col-md-6">
-                            <label>Email</label>
+                            <label>
+                              Email <span style={{ color: "red" }}>*</span>
+                            </label>
                             <div class="input-box">
                               <input
-                                name="email"
+                                name="member_email"
                                 type="email"
-                                // onChange={(e) => {
-                                //   handleChangeForm(e);
-                                // }}
-                                // value={memberDate.mobileNumber}
+                                onChange={(e) => {
+                                  handleChangeForm(e);
+                                }}
+                                value={memberDate.member_email}
                                 class="form-control"
                                 Placeholder="Email"
                               />
+                              {errors?.member_email ? (
+                                <small className="errormsg">
+                                  {errors?.member_email}
+                                </small>
+                              ) : (
+                                ""
+                              )}
                             </div>
                           </div>
 
@@ -1058,91 +1134,91 @@ export default function membership() {
                         }}
                       >
                         <div className="sahkarbharti-pdf-field" id="my-table">
-                        <div
-                          style={{ display: "flex", alignItems: "center" }}
-                          className="memberCoopPDF"
-                        >
-                          <div className="memberCoopPDFIMG">
-                            <img
-                              src="/pdfImg/Sblogo.jpg"
-                              style={{ maxWidth: "200px" }}
-                            />
-                          </div>
-                          <div style={{ textAlign: "center" }}>
-                            <p style={{ margin: "0px", fontSize: "14px" }}>
-                              ॥ Bina Sanskar Nahi Sahakar ॥ ॥ Bina Sahakar Nahi
-                              Uddahar ॥
-                            </p>
-                            <h2
-                              style={{
-                                margin: "5px 0px",
-                                color: "red",
-                                backgroundColor: "yellow",
-                                fontSize: "25px",
-                                fontWeight: "600",
-                              }}
-                            >
-                              Sahakar Bharati
-                              {/* <span style={{  fontSize: "14px",}}>®</span> */}
-                            </h2>
-                            <p style={{ margin: "0px", fontSize: "14px" }}>
-                              Registration No. BOM - 32 / 1979 GBDD under
-                              Societies Registration Act, 1860 and
-                            </p>
-                            <p style={{ margin: "0px", fontSize: "14px" }}>
-                              Registration No F - 5299 / 1980 Mumbai under
-                              Mumbai Public Trust Act 1950
-                            </p>
-                            <p
-                              style={{
-                                margin: "5px 0px",
-                                color: "red",
-                                fontSize: "14px",
-                              }}
-                            >
-                              Office :{" "}
-                              <a
-                                href="mailto:sahakarbharati@gmail.com"
-                                style={{ color: "red" }}
+                          <div
+                            style={{ display: "flex", alignItems: "center" }}
+                            className="memberCoopPDF"
+                          >
+                            <div className="memberCoopPDFIMG">
+                              <img
+                                src="/pdfImg/Sblogo.jpg"
+                                style={{ maxWidth: "200px" }}
+                              />
+                            </div>
+                            <div style={{ textAlign: "center" }}>
+                              <p style={{ margin: "0px", fontSize: "14px" }}>
+                                ॥ Bina Sanskar Nahi Sahakar ॥ ॥ Bina Sahakar
+                                Nahi Uddahar ॥
+                              </p>
+                              <h2
+                                style={{
+                                  margin: "5px 0px",
+                                  color: "red",
+                                  backgroundColor: "yellow",
+                                  fontSize: "25px",
+                                  fontWeight: "600",
+                                }}
                               >
-                                sahakarbharati@gmail.com
-                              </a>{" "}
-                              |{" "}
-                              <a
-                                href="https://www.sahakarbharati.org"
-                                target="_blank"
-                                style={{ color: "red" }}
+                                Sahakar Bharati
+                                {/* <span style={{  fontSize: "14px",}}>®</span> */}
+                              </h2>
+                              <p style={{ margin: "0px", fontSize: "14px" }}>
+                                Registration No. BOM - 32 / 1979 GBDD under
+                                Societies Registration Act, 1860 and
+                              </p>
+                              <p style={{ margin: "0px", fontSize: "14px" }}>
+                                Registration No F - 5299 / 1980 Mumbai under
+                                Mumbai Public Trust Act 1950
+                              </p>
+                              <p
+                                style={{
+                                  margin: "5px 0px",
+                                  color: "red",
+                                  fontSize: "14px",
+                                }}
                               >
-                                www.sahakarbharati.org
-                              </a>
-                            </p>
-                            <p
-                              style={{
-                                margin: "5px 0px",
-                                backgroundColor: "yellow",
-                                fontSize: "13px",
-                              }}
-                            >
-                              Plot No 211, BEAS Building, Flat No 25 & 27,
-                              Satguru Sharan CHS. Ltd., <br /> Opp. Sion
-                              Hospital, Sion (E), Mumbai - 400 022 | Mob:-
-                              8552851979 / 022 24010252
-                            </p>
+                                Office :{" "}
+                                <a
+                                  href="mailto:sahakarbharati@gmail.com"
+                                  style={{ color: "red" }}
+                                >
+                                  sahakarbharati@gmail.com
+                                </a>{" "}
+                                |{" "}
+                                <a
+                                  href="https://www.sahakarbharati.org"
+                                  target="_blank"
+                                  style={{ color: "red" }}
+                                >
+                                  www.sahakarbharati.org
+                                </a>
+                              </p>
+                              <p
+                                style={{
+                                  margin: "5px 0px",
+                                  backgroundColor: "yellow",
+                                  fontSize: "13px",
+                                }}
+                              >
+                                Plot No 211, BEAS Building, Flat No 25 & 27,
+                                Satguru Sharan CHS. Ltd., <br /> Opp. Sion
+                                Hospital, Sion (E), Mumbai - 400 022 | Mob:-
+                                8552851979 / 022 24010252
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                        <h2
-                          style={{
-                            margin: "5px 0px",
-                            color: "#000",
-                            textTransform: "capitalize",
-                            textAlign: "center",
-                            fontSize: "35px",
-                            fontWeight: "600",
-                          }}
-                          className="pdf-logo-main-head"
-                        >
-                          lifetime membership Payment receipt{" "}
-                        </h2>
+                          <h2
+                            style={{
+                              margin: "5px 0px",
+                              color: "#000",
+                              textTransform: "capitalize",
+                              textAlign: "center",
+                              fontSize: "35px",
+                              fontWeight: "600",
+                            }}
+                            className="pdf-logo-main-head"
+                          >
+                            lifetime membership Payment receipt{" "}
+                          </h2>
                           <p
                             style={{
                               borderBottom: "2px solid #fb7400",
